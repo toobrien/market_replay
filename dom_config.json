@@ -1,0 +1,19 @@
+{
+    "dimensions": {
+        "price_precision":      2,
+        "price_char_width":     6,
+        "price_cell_width":     30,
+        "profile_cell_width":   50,
+        "depth_cell_width":     25,
+        "print_cell_width":     15,
+        "ltq_cell_width":       15,
+        "row_height":           12,
+        "text_margin":          3
+    },
+    "style": {
+        "line_width":       1,
+        "stroke_style":     "#ECECEC",
+        "font":             "8px Consolas",
+        "price_cell_color": "#767676"
+    }
+}
