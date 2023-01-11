@@ -7,13 +7,18 @@
         "depth_cell_width":     30,
         "print_cell_width":     30,
         "ltq_cell_width":       30,
+        "text_margin":          3,
         "row_height":           12,
-        "text_margin":          3
+        "dom_height":           1000,
+        "scroll_bar_width":     10
     },
     "style": {
         "line_width":       1,
         "stroke_style":     "#ECECEC",
         "font":             "8px Consolas",
         "price_cell_color": "#767676"
+    },
+    "depth": {
+        "max_levels": 500
     }
 }

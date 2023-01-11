@@ -1,0 +1,16 @@
+<!-- File: templates/index.html -->
+<!doctype html>
+
+<html>
+
+    <body>
+        {% for symbol in symbols %}
+        <div style="max-height: {{ dom_height }}; max-width: {{ dom_width }}; overflow: scroll;">
+            <canvas id = "{{ symbol }}_dom"></canvas>
+        </div>
+        {% endfor %}
+    </body>
+
+    <script src = "./index.js"></script>
+
+</html>
