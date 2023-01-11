@@ -4,9 +4,9 @@
         "price_char_width":     6,
         "price_cell_width":     30,
         "profile_cell_width":   50,
-        "depth_cell_width":     25,
-        "print_cell_width":     15,
-        "ltq_cell_width":       15,
+        "depth_cell_width":     30,
+        "print_cell_width":     30,
+        "ltq_cell_width":       30,
         "row_height":           12,
         "text_margin":          3
     },
