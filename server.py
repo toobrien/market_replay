@@ -11,10 +11,11 @@ app.config["CACHE_TYPE"] = "null"
 CORS(app)
 
 
-watchlists  = loads(open("./watchlists.json", "r").read())
-dom_config  = loads(open("./dom_config.json", "r").read())
-config      = loads(open("./config.json", "r").read())
-symbol_data = {}
+watchlists      = loads(open("./watchlists.json", "r").read())
+dom_config      = loads(open("./dom_config.json", "r").read())
+app_config      = loads(open("./app_config.json", "r").read())
+sym_config      = loads(open("./sym_config.json", "r").read())
+symbol_data     = {}
 
 
 dom_config["dimensions"]["dom_width"] = dom_config["dimensions"]["profile_cell_width"]      + \
@@ -48,7 +49,7 @@ def get_root():
                             symbols     = [ symbol for symbol, _ in symbol_data.items() ],
                             dom_height  = dom_config["dimensions"]["dom_height"],
                             dom_width   = dom_config["dimensions"]["dom_width"],
-                            server      = f"{config['hostname']}:{config['port']}"
+                            server      = f"{app_config['hostname']}:{app_config['port']}"
                         )
 
 
@@ -72,15 +73,28 @@ if __name__ == "__main__":
 
         t1 = time()
 
-        recs = SymIt(sym, "2023-01-11").all()
+        res = {
+            "tick_size":    None,
+            "records":      None
+        }
 
-        symbol_data[sym] = recs
+        # this method won't work for all spreads -- replace with regex later
 
-        print(f"{sym:30s}\t{len(recs)}\t{time() - t1:0.2f}")
+        for key, multiplier in sym_config:
 
-    print(f"{time() - t0:0.2f}")
+            if key in sym:
+
+                res["tick_size"] = multiplier
+
+        res["records"] = SymIt(sym, "2023-01-11").all()
+
+        symbol_data[sym] = res
+
+        print(f"{sym:30s}\t{len(res['records'])}\t{time() - t1:0.2f}")
+
+    print(f"load all symbols:\t{time() - t0:0.2f}")
 
     app.run(
-        host = config["hostname"],
-        port = config["port"]
+        host = app_config["hostname"],
+        port = app_config["port"]
     )
