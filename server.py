@@ -6,7 +6,8 @@ from sym_it     import SymIt
 from sys        import argv
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder = ".", static_url_path = "")
+app.config["CACHE_TYPE"] = "null"
 CORS(app)
 
 
@@ -21,6 +22,9 @@ dom_config["dimensions"]["dom_width"] = dom_config["dimensions"]["profile_cell_w
                                         dom_config["dimensions"]["depth_cell_width"] * 2    + \
                                         dom_config["dimensions"]["print_cell_width"] * 2    + \
                                         dom_config["dimensions"]["ltq_cell_width"]          + \
+                                        dom_config["dimensions"]["scroll_bar_width"]
+
+dom_config["dimensions"]["row_width"] = dom_config["dimensions"]["dom_width"] - \
                                         dom_config["dimensions"]["scroll_bar_width"]
 
 
@@ -43,7 +47,8 @@ def get_root():
                             "index.html",
                             symbols     = [ symbol for symbol, _ in symbol_data.items() ],
                             dom_height  = dom_config["dimensions"]["dom_height"],
-                            dom_width   = dom_config["dimensions"]["dom_width"]
+                            dom_width   = dom_config["dimensions"]["dom_width"],
+                            server      = f"{config['hostname']}:{config['port']}"
                         )
 
 
@@ -75,4 +80,7 @@ if __name__ == "__main__":
 
     print(f"{time() - t0:0.2f}")
 
-    app.run(port = 8080)
+    app.run(
+        host = config["hostname"],
+        port = config["port"]
+    )

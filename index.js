@@ -1,18 +1,16 @@
-import { dom } from "./dom.js";
+//import { dom } from "./dom.js";
 
 
-async function run(host, port) {
+async function run(server) {
 
-    const server_url   = `http://${host}:${port}`;
-
-    var   res           = await fetch(`${server_url}/dom_config`);
+    var   res           = await fetch(`http://${server}/dom_config`);
     const dom_config    = await res.json();
     
     /*
 
     const t0 = performance.now()
 
-    res                 = await fetch(`${server_url}/symbol_data`);
+    res                 = await fetch(`http://${host}/symbol_data`);
     const symbol_data   = await res.json();
    
     console.log(`/symbol_data: ${performance.now() - t0} ms elapsed`);
@@ -36,5 +34,5 @@ async function run(host, port) {
 }
 
 
-run();
+run(server);
 

@@ -41,102 +41,102 @@ class dom {
 
     constructor(symbol, dom_config) {
 
-        canvas                 = document.getElementById(`${symbol}_dom`);
-        ctx                    = canvas.getContext("2d");
+        this.canvas                 = document.getElementById(`${symbol}_dom`);
+        this.ctx                    = this.canvas.getContext("2d");
         
-        text_margin            = dom_config["dimensions"]["text_margin"];
+        this.text_margin            = dom_config["dimensions"]["text_margin"];
 
-        default_line_width     = dom_config["style"]["line_width"];
-        default_stroke_style   = dom_config["style"]["stroke_style"];
-        default_font           = dom_config["style"]["font"];
+        this.default_line_width     = dom_config["style"]["line_width"];
+        this.default_stroke_style   = dom_config["style"]["stroke_style"];
+        this.default_font           = dom_config["style"]["font"];
 
-        row_height             = dom_config["dimensions"]["row_height"];
-        row_width              = dom_config["dimensions"]["row_width"];
+        this.row_height             =   dom_config["dimensions"]["row_height"];
+        this.row_width              =   dom_config["dimensions"]["row_width"];
 
-        profile_cell_width     = dom_config["dimensions"]["profile_cell_width"];
+        this.profile_cell_width     = dom_config["dimensions"]["profile_cell_width"];
 
-        price_precision        = dom_config["dimensions"]["price_precision"];
-        price_char_width       = dom_config["dimensions"]["price_width"];
-        price_cell_width       = dom_config["dimensions"]["price_cell_width"];
-        price_cell_color       = dom_config["style"]["price_cell_color"];
+        this.price_precision        = dom_config["dimensions"]["price_precision"];
+        this.price_char_width       = dom_config["dimensions"]["price_width"];
+        this.price_cell_width       = dom_config["dimensions"]["price_cell_width"];
+        this.price_cell_color       = dom_config["style"]["price_cell_color"];
 
-        depth_cell_width       = dom_config["dimensions"]["depth_cell_width"];
+        this.depth_cell_width       = dom_config["dimensions"]["depth_cell_width"];
 
-        print_cell_width       = dom_config["dimensions"]["print_cell_width"];
+        this.print_cell_width       = dom_config["dimensions"]["print_cell_width"];
         
-        ltq_cell_width         = dom_config["dimensions"]["ltq_cell_width"];
+        this.ltq_cell_width         = dom_config["dimensions"]["ltq_cell_width"];
         
         // where do these come from?
 
-        max_price     = 76.25;
-        min_price     = 73.50;
-        tick_size     = 0.01;
-        num_prices    = (max_price - min_price) / tick_size;
-        canvas_height = (num_prices + 1) * row_height;
+        this.max_price     = 76.25;
+        this.min_price     = 73.50;
+        this.tick_size     = 0.01;
+        this.num_prices    = (this.max_price - this.min_price) / this.tick_size;
+        this.canvas_height = (this.num_prices + 1) * this.row_height;
         
         // initialize canvas
 
-        canvas.width    = row_width;
-        canvas.height   = canvas_height;
+        this.canvas.width    = this.row_width;
+        this.canvas.height   = this.canvas_height;
 
-        ctx.lineWidth   = default_line_width;
-        ctx.strokeStyle = default_stroke_style;
-        ctx.font        = default_font;
+        this.ctx.lineWidth   = this.default_line_width;
+        this.ctx.strokeStyle = this.default_stroke_style;
+        this.ctx.font        = this.default_font;
         
         // outline canvas
 
-        ctx.strokeRect(0, 0, row_width, canvas_height);
+        this.ctx.strokeRect(0, 0, this.row_width, this.canvas_height);
 
         // column lines
 
         var x = 0;
 
-        profile_cell_offset    = 0;
-        price_cell_offset      = profile_cell_offset + profile_cell_width;
-        bid_depth_cell_offset  = price_cell_offset + price_cell_width;
-        bid_print_cell_offset  = bid_depth_cell_offset + depth_cell_width;
-        ask_print_cell_offset  = bid_print_cell_offset + print_cell_width;
-        ask_depth_cell_offset  = ask_print_cell_offset + print_cell_width;
-        ltq_cell_offset        = ask_depth_cell_offset + depth_cell_width;
+        this.profile_cell_offset    = 0;
+        this.price_cell_offset      = this.profile_cell_offset + this.profile_cell_width;
+        this.bid_depth_cell_offset  = this.price_cell_offset + this.price_cell_width;
+        this.bid_print_cell_offset  = this.bid_depth_cell_offset + this.depth_cell_width;
+        this.ask_print_cell_offset  = this.bid_print_cell_offset + this.print_cell_width;
+        this.ask_depth_cell_offset  = this.ask_print_cell_offset + this.print_cell_width;
+        this.ltq_cell_offset        = this.ask_depth_cell_offset + this.depth_cell_width;
 
         [
-            price_cell_offset,
-            bid_depth_cell_offset,
-            bid_print_cell_ofsset,
-            ask_print_cell_offset,
-            ask_depth_cell_offset,
-            ltq_cell_offset
+            this.price_cell_offset,
+            this.bid_depth_cell_offset,
+            this.bid_print_cell_ofsset,
+            this.ask_print_cell_offset,
+            this.ask_depth_cell_offset,
+            this.ltq_cell_offset
         ].forEach(
             offset => {
                 
-                ctx.moveTo(offset, 0);
-                ctx.lineTo(offset, canvas_height);
-                ctx.stroke();
+                this.ctx.moveTo(offset, 0);
+                this.ctx.lineTo(offset, this.canvas_height);
+                this.ctx.stroke();
 
             }
         );
 
         // row lines + prices
 
-        x = price_cell_offset;
+        x = this.price_cell_offset;
 
-        for (var i = 0; i <= num_prices; i += 1) {
+        for (var i = 0; i <= this.num_prices; i += 1) {
         
-            const y       = (i + 1) * row_height;
-            const price   = max_price - i * tick_size;
+            const y       = (i + 1) * this.row_height;
+            const price   = this.max_price - i * this.tick_size;
 
-            ctx.moveTo(0, y);
-            ctx.lineTo(row_width, y);
-            ctx.stroke();
+            this.ctx.moveTo(0, y);
+            this.ctx.lineTo(this.row_width, y);
+            this.ctx.stroke();
         
-            ctx.fillStyle = price_cell_color;
-            ctx.fillRect(x, y - row_height, price_cell_width, row_height);
+            this.ctx.fillStyle = this.price_cell_color;
+            this.ctx.fillRect(x, y - this.row_height, this.price_cell_width, this.row_height);
 
-            ctx.fillStyle = default_stroke_style;
-            ctx.fillText(
-                String(price.toFixed(price_precision)).padStart(price_char_width), 
-                x + text_margin, 
-                y - text_margin
+            this.ctx.fillStyle = this.default_stroke_style;
+            this.ctx.fillText(
+                String(price.toFixed(this.price_precision)).padStart(this.price_char_width), 
+                x + this.text_margin, 
+                y - this.text_margin
             );
 
         }
@@ -146,6 +146,8 @@ class dom {
 
 
     update(ts) {
+
+        this.ts = ts;
 
     }
 
@@ -157,4 +159,4 @@ class dom {
 
 }
 
-export { dom };
+// export { dom };
