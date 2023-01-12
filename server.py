@@ -37,7 +37,7 @@ def get_dom_config():
 @app.route("/symbol_data")
 def get_symbol_data():
 
-    return Response(symbol_data, mimetype = "application/json")
+    return Response(dumps(symbol_data), mimetype = "application/json")
 
 
 @app.route("/")

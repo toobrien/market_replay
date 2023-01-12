@@ -3,10 +3,11 @@
 class dom {
 
 
-    canvas  = null;
-    ctx     = null;
+    canvas                  = null;
+    ctx                     = null;
     
-    ts = 0;
+    ts                      = 0;
+    recors                  = null;
 
     row_height              = null;
     row_width               = null;
@@ -39,7 +40,9 @@ class dom {
     ltq_cell_offset         = null;
 
 
-    constructor(symbol, dom_config) {
+    constructor(symbol, records, dom_config) {
+
+        this.records                = records;
 
         this.canvas                 = document.getElementById(`${symbol}_dom`);
         this.ctx                    = this.canvas.getContext("2d");
