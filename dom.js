@@ -11,7 +11,7 @@ class dom {
     static t_side   = 3;
     static t_len    = 4;
     
-    // depth record enum -- can probably modify this in the parser for better performance
+    // depth record enum
 
     static d_ts         = 0;
     static d_cmd        = 1;
@@ -35,24 +35,33 @@ class dom {
     static dc_del_ask   = 7;
 
 
-    // dom specific members
+    // symbol and state
 
     symbol                  = null;
+    it                      = null;
+    ts                      = null;
+    max_price               = null;
+    min_price               = null;
+    session_high            = null;
+    session_low             = null;
+    records                 = null;
+    best_bid                = null;
+    best_ask                = null;
+    last_price              = null;
+    prev_center_line_y      = null;
+
+    // dom specific 
 
     canvas                  = null;
+    canvas_height           = null;
     ctx                     = null;
-    
-    ts                      = 0;
-    records                 = null;
+    container               = null;
+    dom_height              = null;
 
     row_height              = null;
     row_width               = null;
 
     text_margin             = null;
-
-    default_line_width      = null;
-    default_stroke_style    = null;
-    default_font            = null;
 
     profile_cell_width      = null;
     profile_cell_offset     = null;
@@ -82,15 +91,31 @@ class dom {
     ltq_cell_offset         = null;
     ttq_cell_col            = null;
 
-    best_bid                = null;
-    best_ask                = null;
-
     max_depth               = null;
+
+    // style and color
+
+    default_line_width      = null;
+    font                    = null;
+
+    grid_color              = null;
+    center_line_color       = null;
+    default_cell_color      = null;
+
+    price_text_color        = null;
+    
+    bid_depth_cell_color    = null;
+    ask_depth_cell_color    = null;
+
+    session_high_color      = null;
+    session_low_color       = null;
 
 
     constructor(symbol, records, tick_size, dom_config) {
 
         this.symbol     = symbol;
+        this.it         = 0;
+        this.ts         = 0;
         this.tick_size  = tick_size;
         this.records    = records;
         this.best_bid   = Number.MIN_VALUE;
@@ -103,7 +128,9 @@ class dom {
         this.initialize_dimensions(dom_config);
         this.initialize_offsets();
         this.initialize_price_range(dom_config);
+        this.prune_depth();
         this.initialize_cols();
+        this.initialize_style_and_context(dom_config);
         this.initailize_canvas();
 
     }
@@ -113,10 +140,7 @@ class dom {
 
         this.text_margin            = dom_config["dimensions"]["text_margin"];
 
-        this.default_line_width     = dom_config["style"]["line_width"];
-        this.default_stroke_style   = dom_config["style"]["stroke_style"];
-        this.default_font           = dom_config["style"]["font"];
-
+        this.dom_height             = dom_config["dimensions"]["dom_height"];
         this.row_height             = dom_config["dimensions"]["row_height"];
         this.row_width              = dom_config["dimensions"]["row_width"];
 
@@ -157,12 +181,10 @@ class dom {
 
         this.max_depth = dom_config["depth"]["max_depth"];
 
-        const records   = this.records;
-
         this.max_price = Number.MIN_SAFE_INTEGER;
         this.min_price = Number.MAX_SAFE_INTEGER;
 
-        for (const rec of records) {
+        for (const rec of this.records) {
 
             if (rec.length == dom.t_len) {
 
@@ -175,35 +197,93 @@ class dom {
 
         }
 
+        // initialize last_price == first price
+
+        for (const rec of this.records) {
+
+            if (rec.length == dom.t_len) {
+
+                this.last_price = rec[dom.t_price];
+                
+                break;
+
+            }
+
+        }
+
+        this.max_price = this.max_price + this.max_depth;
+        this.min_price = this.min_price - this.max_depth;
+
         this.num_prices = this.max_price - this.min_price;
+
+    }
+
+
+    prune_depth() {
+
+        this.records = this.records.filter( 
+            rec => {
+                return  rec.length == dom.t_len ||
+                        (   rec[dom.d_price] >= this.min_price &&
+                            rec[dom.d_price] <= this.max_price
+                        )
+            }
+        );
 
     }
 
 
     initialize_cols() {
         
-        this.profile_col    = Array(this.num_prices).fill(0.0);
+        this.profile_col    = Array(this.num_prices).fill(0);
         this.price_col      = Array(this.num_prices).fill(0.0);
-        this.bid_depth_col  = Array(this.num_prices).fill(0.0);
-        this.ask_depth_col  = Array(this.num_prices).fill(0.0);
-        this.bid_print_col  = Array(this.num_prices).fill(0.0);
-        this.ask_print_col  = Array(this.num_prices).fill(0.0);
-        this.ltq_col        = Array(this.num_prices).fill(0.0);
+        this.bid_depth_col  = Array(this.num_prices).fill(0);
+        this.ask_depth_col  = Array(this.num_prices).fill(0);
+        this.bid_print_col  = Array(this.num_prices).fill(0);
+        this.ask_print_col  = Array(this.num_prices).fill(0);
+        this.ltq_col        = Array(this.num_prices).fill(0);
+
+    }
+
+
+    initialize_style_and_context(dom_config) {
+
+        this.default_line_width     = dom_config["style"]["default_line_width"];
+
+        this.font                   = dom_config["style"]["font"];
+
+        this.grid_color             = dom_config["colors"]["grid_color"];
+        this.center_line_color      = dom_config["colors"]["center_line_color"];
+        this.default_cell_color     = dom_config["colors"]["default_cell_color"];
+
+        this.bid_depth_cell_color   = dom_config["colors"]["bid_depth_cell_color"];
+        this.ask_depth_cell_color   = dom_config["colors"]["ask_depth_cell_color"];
+
+        this.price_text_color       = dom_config["colors"]["price_text_color"];
+        
+        this.session_high_color     = dom_config["colors"]["session_high_color"];
+        this.session_low_color      = dom_config["colors"]["session_low_color"];
 
     }
 
 
     initailize_canvas() {
 
-        this.canvas.height  = (this.num_prices + 1) * this.row_height;
+        // append canvas to DOM -- allows overflow/scrolling
+
+        this.canvas_height  = (this.num_prices + 1) * this.row_height;
+        this.canvas.height  = this.canvas_height;
         this.canvas.width   = this.row_width;
+        this.container      = document.getElementById(`${this.symbol}_dom_container`);
+
+        this.container.appendChild(this.canvas);
         
-        document.getElementById(`${this.symbol}_dom_container`).appendChild(this.canvas);
+        // initialize context with defaults
 
         this.ctx.lineWidth      = this.default_line_width;
-        this.ctx.strokeStyle    = this.default_stroke_style;
-        this.ctx.font           = this.default_font;
-        
+        this.ctx.strokeStyle    = this.grid_color;
+        this.ctx.font           = this.font;
+
         // outline canvas
 
         this.ctx.strokeRect(0, 0, this.row_width, this.canvas_height);
@@ -227,9 +307,9 @@ class dom {
             }
         );
 
-        // row lines + prices
+        // add grid lines and color cells
 
-        const x = this.price_cell_offset;
+        const t0 = performance.now();
 
         for (var i = 0; i <= this.num_prices; i += 1) {
         
@@ -239,34 +319,136 @@ class dom {
             this.ctx.moveTo(0, y);
             this.ctx.lineTo(this.row_width, y);
             this.ctx.stroke();
-        
-            this.ctx.fillStyle = this.price_cell_color;
-            this.ctx.fillRect(x, y - this.row_height, this.price_cell_width, this.row_height);
 
-            this.ctx.fillStyle = this.default_stroke_style;
+            this.ctx.fillStyle = this.default_cell_color;
+
+            this.ctx.fillRect(
+                this.profile_cell_offset, 
+                y - this.row_height, 
+                this.profile_cell_width, 
+                this.row_height
+            );
+
+            this.ctx.fillRect(
+                this.price_cell_offset, 
+                y - this.row_height, 
+                this.price_cell_width, 
+                this.row_height
+            );
+
+            this.ctx.fillRect(
+                this.bid_print_cell_offset, 
+                y - this.row_height, 
+                this.print_cell_width, 
+                this.row_height
+            );
+
+            this.ctx.fillRect(
+                this.ask_print_cell_offset, 
+                y - this.row_height, 
+                this.print_cell_width, 
+                this.row_height
+            );
+
+            this.ctx.fillRect(
+                this.ltq_cell_offset, 
+                y - this.row_height, 
+                this.ltq_cell_width, 
+                this.row_height
+            );
+
+            this.ctx.fillStyle = this.price_text_color;
+
             this.ctx.fillText(
                 String(price.toFixed(this.price_precision)).padStart(this.price_char_width), 
-                x + this.text_margin, 
+                this.price_cell_offset + this.text_margin, 
                 y - this.text_margin
             );
 
+            this.ctx.fillStyle = this.bid_depth_cell_color;
+
+            this.ctx.fillRect(
+                this.bid_depth_cell_offset, 
+                y - this.row_height, 
+                this.depth_cell_width, 
+                this.row_height
+            );
+
+            this.ctx.fillStyle = this.ask_depth_cell_color;
+
+            this.ctx.fillRect(
+                this.ask_depth_cell_offset, 
+                y - this.row_height, 
+                this.depth_cell_width, 
+                this.row_height
+            );
+
         }
+
+        console.log(`initial draw: ${performance.now() - t0}`);
+
+    }
+
+
+    center_dom() {
+
+        const y         = (this.max_price - this.last_price) * this.row_height;
+        const offset    = Math.round(0.5 * this.dom_height);
+
+        this.container.scrollTo(0, y - offset);
+
+        this.ctx.beginPath()
+        this.ctx.strokeStyle = this.center_line_color;
+        this.ctx.moveTo(0, y);
+        this.ctx.lineTo(this.row_width, y);
+        this.ctx.stroke();
+
+        if (this.prev_center_line_y) {
+
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = this.grid_color;
+            this.ctx.moveTo(0, this.prev_center_line_y);
+            this.ctx.lineTo(this.row_width, this.prev_center_line_y);
+            this.ctx.stroke();
+
+        }
+
+        this.prev_center_line_y = y;
+
+    }
+
+
+    clear_prints() {
+
+
 
     }
 
 
     update(ts) {
 
-        this.ts = ts;
+        if (this.it > this.records.length)
+
+            return;
+
+        var rec = this.records[this.it];
+
+        while (rec[dom.t_ts] < ts && this.it < this.records.length) {
+
+            rec = this.records[this.it++];
+
+            // ...
+
+        }
 
     }
 
 
     draw() {
 
+
+
     }
 
 
 }
-
-// export { dom };

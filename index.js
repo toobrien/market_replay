@@ -1,4 +1,3 @@
-//import { dom } from "./dom.js";
 
 
 async function run(server) {
@@ -21,10 +20,6 @@ async function run(server) {
         "CLG23-CLH23.FUT_SPREAD.CME": {
             "records":      [],
             "tick_size":    0.01
-        },
-        "CLH23-CLJ23.FUT_SPREAD.CME": {
-            "records":      [],
-            "tick_size":    0.01,
         }
     }
     */
@@ -40,8 +35,31 @@ async function run(server) {
             )
         );
         
+    // test update
+
+    doms[0].update(Number.MAX_SAFE_INTEGER);
     
     dm = new dom_manager(doms);
+
+    document.addEventListener(
+        "keydown", e => {
+
+            if (e.key === center_dom_key) {
+
+                for (const dom of doms)
+
+                    dom.center_dom();
+
+            } else if (e.key === clear_prints_key) {
+
+                for (const dom of doms)
+
+                    dom.clear_prints()
+
+            }
+
+        }
+    );
 
     dm.run();
 

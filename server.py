@@ -46,10 +46,12 @@ def get_root():
 
     return render_template(
                             "index.html",
-                            symbols     = [ symbol for symbol, _ in symbol_data.items() ],
-                            dom_height  = dom_config["dimensions"]["dom_height"],
-                            dom_width   = dom_config["dimensions"]["dom_width"],
-                            server      = f"{app_config['hostname']}:{app_config['port']}"
+                            symbols             = [ symbol for symbol, _ in symbol_data.items() ],
+                            dom_height          = dom_config["dimensions"]["dom_height"],
+                            dom_width           = dom_config["dimensions"]["dom_width"],
+                            server              = f"{app_config['hostname']}:{app_config['port']}",
+                            center_dom_key      = app_config["center_dom_key"],
+                            clear_prints_key    = app_config["clear_prints_key"]
                         )
 
 

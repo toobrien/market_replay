@@ -1,5 +1,7 @@
 {
-  "sc_root": "/Volumes/[C] Windows 10/SierraChart",
-  "hostname": "localhost",
-  "port": 8080
+  "sc_root":          "/Volumes/[C] Windows 10/SierraChart",
+  "hostname":         "localhost",
+  "port":             8080,
+  "center_dom_key":   "q",
+  "clear_prints_key": "w"
 }

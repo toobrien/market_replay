@@ -13,12 +13,20 @@
         "scroll_bar_width":     10
     },
     "style": {
-        "line_width":       1,
-        "stroke_style":     "#ECECEC",
-        "font":             "8px Consolas",
-        "price_cell_color": "#767676"
+        "default_line_width":   1,
+        "font":                 "8px Consolas"
+    },
+    "colors": {
+        "grid_color":           "#dddddd",
+        "center_line_color":    "#000000",
+        "default_cell_color":   "#eeeeee",
+        "bid_depth_cell_color": "#1984c5",
+        "ask_depth_cell_color": "#c23728",
+        "price_text_color":     "#000000",
+        "session_high_color":   "#c23728",
+        "session_low_color":    "#1984c5"
     },
     "depth": {
-        "max_depths": 500
+        "max_depth": 100
     }
 }
