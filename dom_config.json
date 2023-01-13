@@ -14,7 +14,7 @@
     },
     "style": {
         "default_line_width":   1,
-        "font":                 "8px Consolas"
+        "font":                 "8px Terminal"
     },
     "colors": {
         "grid_color":           "#dddddd",

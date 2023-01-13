@@ -3,5 +3,6 @@
   "hostname":         "localhost",
   "port":             8080,
   "center_dom_key":   "q",
-  "clear_prints_key": "w"
+  "clear_prints_key": "w",
+  "update_ms":        10
 }

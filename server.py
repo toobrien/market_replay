@@ -51,7 +51,8 @@ def get_root():
                             dom_width           = dom_config["dimensions"]["dom_width"],
                             server              = f"{app_config['hostname']}:{app_config['port']}",
                             center_dom_key      = app_config["center_dom_key"],
-                            clear_prints_key    = app_config["clear_prints_key"]
+                            clear_prints_key    = app_config["clear_prints_key"],
+                            update_ms           = app_config["update_ms"]
                         )
 
 
@@ -99,7 +100,8 @@ if __name__ == "__main__":
 
         print(f"{sym:30s}\t{len(res['records'])}\t{time() - t1:0.2f}")
 
-    print(f"load all symbols:\t{time() - t0:0.2f}")
+    print(f"loaded all symbols:\t\t{time() - t0:0.2f}")
+    print("server ready")
 
     app.run(
         host = app_config["hostname"],

@@ -2,30 +2,36 @@
 <!doctype html>
 
 <html>
-    <body>
-        <table>
-            <tr>
-                <td></td>
-                {% for symbol in symbols %}
-                <td style = "text-align: center;">
-                    {{ symbol }}
-                </td>
-                {% endfor %}
-            </tr>
-            <tr>
-                <td id = "control_cell"></td>
-                {% for symbol in symbols %}
-                <td id = "{{ symbol }}_dom_cell" style = "vertical-align: top;">
-                    <div id = "{{ symbol }}_dom_container" style="max-height: {{ dom_height }}px; max-width: {{ dom_width }}px; overflow: scroll;"></div>
-                </td>
-                {% endfor %}
-            <tr>
-        </table>
+    <body id = "body">
+        <div id = "loading_screen">loading...</div>
+        <div id = "main_screen" style = "display: none;">
+            <table>
+                <tr>
+                    <td></td>
+                    {% for symbol in symbols %}
+                    <td style = "text-align: center;">
+                        {{ symbol }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td id = "control_cell" style = "vertical-align: top;">
+                        <button id = "play_button" style = "width: 50px;"></button>
+                    </td>
+                    {% for symbol in symbols %}
+                    <td id = "{{ symbol }}_dom_cell" style = "vertical-align: top;">
+                        <div id = "{{ symbol }}_dom_container" style="max-height: {{ dom_height }}px; max-width: {{ dom_width }}px; overflow: scroll;"></div>
+                    </td>
+                    {% endfor %}
+                <tr>
+            </table>
+        </div>
     </body>
     <script>
         const server            = "{{ server }}";
         const center_dom_key    = "{{ center_dom_key }}";
         const clear_prints_key  = "{{ clear_prints_key }}";
+        const update_ms         = "{{ update_ms }}";
     </script>
     <script src = "./dom.js"></script>
     <script src = "./dom_manager.js"></script>

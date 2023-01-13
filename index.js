@@ -1,6 +1,9 @@
 
 
-async function run(server) {
+var dm = null;
+
+
+async function run() {
 
     var   res           = await fetch(`http://${server}/dom_config`);
     const dom_config    = await res.json();
@@ -34,15 +37,10 @@ async function run(server) {
                 dom_config
             )
         );
-        
-    // test update
-
-    doms[0].update(Number.MAX_SAFE_INTEGER);
-    
-    dm = new dom_manager(doms);
 
     document.addEventListener(
-        "keydown", e => {
+        "keydown", 
+        e => {
 
             if (e.key === center_dom_key) {
 
@@ -61,10 +59,15 @@ async function run(server) {
         }
     );
 
-    dm.run();
+    // start simulation
+
+    dm = new dom_manager(doms, update_ms);
+
+    document.getElementById("loading_screen").style.display = "none";
+    document.getElementById("main_screen").style.display    = "inline";
 
 }
 
 
-run(server);
+run();
 

@@ -38,19 +38,37 @@ class dom {
     // symbol and state
 
     symbol                  = null;
+
     it                      = null;
     ts                      = null;
+    
     max_price               = null;
     min_price               = null;
     session_high            = null;
     session_low             = null;
+    
     records                 = null;
+    
     best_bid                = null;
     best_ask                = null;
     last_price              = null;
+    
     prev_center_line_y      = null;
 
-    // dom specific 
+    max_depth               = null;
+
+    profile_col             = null;
+    price_col               = null;
+    ask_depth_col           = null;
+    bid_depth_col           = null;
+    bid_print_col           = null;
+    ask_print_col           = null;
+    ltq_price               = null;
+    ltq_qty                 = null;
+    ltq_prev_price          = null;
+    ltq_prev_qty            = null;
+
+    // dom graphics
 
     canvas                  = null;
     canvas_height           = null;
@@ -65,33 +83,23 @@ class dom {
 
     profile_cell_width      = null;
     profile_cell_offset     = null;
-    profile_col             = null;
 
     price_precision         = null;
     price_char_width        = null;
     price_cell_width        = null;
-    price_cell_color        = null;
     price_cell_offset       = null;
-    price_col               = null;
 
     depth_cell_width        = null;
     bid_depth_cell_offset   = null;
     ask_depth_cell_offset   = null;
-    bid_depth_col           = null;
-    ask_depth_col           = null;
 
     print_cell_width        = null;
     print_cell_offset       = null;
     bid_print_cell_offset   = null;
     ask_print_cell_offset   = null;
-    bid_print_col           = null;
-    ask_print_col           = null;
 
     ltq_cell_width          = null;
     ltq_cell_offset         = null;
-    ttq_cell_col            = null;
-
-    max_depth               = null;
 
     // style and color
 
@@ -120,18 +128,19 @@ class dom {
         this.records    = records;
         this.best_bid   = Number.MIN_VALUE;
         this.best_ask   = Number.MAX_VALUE;
-
-        this.canvas     = document.createElement("canvas");
-        this.canvas.id  = `${symbol}_dom`;
-        this.ctx        = this.canvas.getContext("2d");
+        this.max_depth  = dom_config["depth"]["max_depth"];
 
         this.initialize_dimensions(dom_config);
         this.initialize_offsets();
-        this.initialize_price_range(dom_config);
+        this.initialize_price_range();
         this.prune_depth();
         this.initialize_cols();
         this.initialize_style_and_context(dom_config);
         this.initailize_canvas();
+
+        if (records)
+        
+            this.ts = records[0][dom.t_ts];
 
     }
 
@@ -147,7 +156,7 @@ class dom {
         this.profile_cell_width     = dom_config["dimensions"]["profile_cell_width"];
 
         this.price_precision        = dom_config["dimensions"]["price_precision"];
-        this.price_char_width       = dom_config["dimensions"]["price_width"];
+        this.price_char_width       = dom_config["dimensions"]["price_char_width"];
         this.price_cell_width       = dom_config["dimensions"]["price_cell_width"];
         this.price_cell_color       = dom_config["style"]["price_cell_color"];
 
@@ -175,11 +184,7 @@ class dom {
     }
 
 
-    initialize_price_range(dom_config) {
-
-        // need to rewrite this to use max_depth and depth, rather than trades
-
-        this.max_depth = dom_config["depth"]["max_depth"];
+    initialize_price_range() {
 
         this.max_price = Number.MIN_SAFE_INTEGER;
         this.min_price = Number.MAX_SAFE_INTEGER;
@@ -241,7 +246,7 @@ class dom {
         this.ask_depth_col  = Array(this.num_prices).fill(0);
         this.bid_print_col  = Array(this.num_prices).fill(0);
         this.ask_print_col  = Array(this.num_prices).fill(0);
-        this.ltq_col        = Array(this.num_prices).fill(0);
+        this.dirty_col      = Array(this.num_prices).fill(false);
 
     }
 
@@ -269,7 +274,11 @@ class dom {
 
     initailize_canvas() {
 
-        // append canvas to DOM -- allows overflow/scrolling
+        // create canvas and append to DOM to allow for scrolling in container
+
+        this.canvas     = document.createElement("canvas");
+        this.canvas.id  = `${this.symbol}_dom`;
+        this.ctx        = this.canvas.getContext("2d");
 
         this.canvas_height  = (this.num_prices + 1) * this.row_height;
         this.canvas.height  = this.canvas_height;
@@ -302,7 +311,6 @@ class dom {
                 
                 this.ctx.moveTo(offset, 0);
                 this.ctx.lineTo(offset, this.canvas_height);
-                this.ctx.stroke();
 
             }
         );
@@ -318,7 +326,6 @@ class dom {
 
             this.ctx.moveTo(0, y);
             this.ctx.lineTo(this.row_width, y);
-            this.ctx.stroke();
 
             this.ctx.fillStyle = this.default_cell_color;
 
@@ -385,6 +392,8 @@ class dom {
 
         }
 
+        this.ctx.stroke();
+
         console.log(`initial draw: ${performance.now() - t0}`);
 
     }
@@ -427,28 +436,53 @@ class dom {
 
     update(ts) {
 
-        if (this.it > this.records.length)
+        const t0 = performance.now();
+
+        if (this.it >= this.records.length)
 
             return;
 
+        if (ts < this.ts) {
+
+            this.reset_to_ts();
+
+            return;
+
+        }
+
         var rec = this.records[this.it];
+        var processed = 0;
 
         while (rec[dom.t_ts] < ts && this.it < this.records.length) {
 
-            rec = this.records[this.it++];
+            rec     = this.records[this.it++];
+            this.ts = rec[dom.t_ts];
 
+            processed += 1;
             // ...
 
         }
+
+        console.log(`processed ${processed}, in ${performance.now() - t0}`)
 
     }
 
 
     draw() {
 
-
+        // ...
 
     }
+
+
+    reset_to_ts() { 
+    
+        // 
+    
+    }
+
+
+    get_ts() { return this.ts; }
 
 
 }
