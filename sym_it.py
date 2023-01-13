@@ -1,7 +1,7 @@
-from bisect     import bisect_right
-from json       import loads
-from parsers    import depth_rec, tas_rec, parse_tas, parse_tas_header, parse_depth, parse_depth_header
-from time       import time
+from bisect     import  bisect_right
+from json       import  loads
+from parsers    import  depth_rec, tas_rec, parse_tas, parse_tas_header, parse_depth, parse_depth_header
+from time       import  time
 
 
 SC_ROOT = loads(open("./app_config.json").read())["sc_root"]

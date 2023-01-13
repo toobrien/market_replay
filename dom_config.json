@@ -19,6 +19,6 @@
         "price_cell_color": "#767676"
     },
     "depth": {
-        "max_levels": 500
+        "max_depths": 500
     }
 }

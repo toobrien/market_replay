@@ -37,11 +37,13 @@ class dom {
 
     // dom specific members
 
+    symbol                  = null;
+
     canvas                  = null;
     ctx                     = null;
     
     ts                      = 0;
-    recors                  = null;
+    records                 = null;
 
     row_height              = null;
     row_width               = null;
@@ -83,19 +85,24 @@ class dom {
     best_bid                = null;
     best_ask                = null;
 
+    max_depth               = null;
+
 
     constructor(symbol, records, tick_size, dom_config) {
 
+        this.symbol     = symbol;
         this.tick_size  = tick_size;
         this.records    = records;
-        this.canvas     = document.getElementById(`${symbol}_dom`);
-        this.ctx        = this.canvas.getContext("2d");
         this.best_bid   = Number.MIN_VALUE;
         this.best_ask   = Number.MAX_VALUE;
 
+        this.canvas     = document.createElement("canvas");
+        this.canvas.id  = `${symbol}_dom`;
+        this.ctx        = this.canvas.getContext("2d");
+
         this.initialize_dimensions(dom_config);
         this.initialize_offsets();
-        this.initialize_price_range(dom_config["depth"]["max_depth"]);
+        this.initialize_price_range(dom_config);
         this.initialize_cols();
         this.initailize_canvas();
 
@@ -144,20 +151,22 @@ class dom {
     }
 
 
-    initialize_price_range(max_depth) {
+    initialize_price_range(dom_config) {
 
         // need to rewrite this to use max_depth and depth, rather than trades
 
-        const records = this.records();
+        this.max_depth = dom_config["depth"]["max_depth"];
 
-        this.max_price = Number.MIN_VALUE;
-        this.min_price = Number.MIN_VALUE;
+        const records   = this.records;
 
-        for (rec in records) {
+        this.max_price = Number.MIN_SAFE_INTEGER;
+        this.min_price = Number.MAX_SAFE_INTEGER;
 
-            if (rec.length == t_len) {
+        for (const rec of records) {
 
-                const price = rec[t_price];
+            if (rec.length == dom.t_len) {
+
+                const price = rec[dom.t_price];
 
                 this.max_price = this.max_price > price ? this.max_price : price;
                 this.min_price = this.min_price < price ? this.min_price : price;
@@ -166,29 +175,30 @@ class dom {
 
         }
 
-        this.num_prices = (this.max_price - this.min_price) / this.tick_size;
+        this.num_prices = this.max_price - this.min_price;
 
     }
 
 
     initialize_cols() {
         
-        this.profile_col    = Array.new(this.num_prices).fill(0.0);
-        this.price_col      = Array.new(this.num_prices).fill(0.0);
-        this.bid_depth_col  = Array.new(this.num_prices).fill(0.0);
-        this.ask_depth_col  = Array.new(this.num_prices).fill(0.0);
-        this.bid_print_col  = Array.new(this.num_prices).fill(0.0);
-        this.ask_print_col  = Array.new(this.num_prices).fill(0.0);
-        this.ltq_col        = Array.new(this.num_prices).fill(0.0);
+        this.profile_col    = Array(this.num_prices).fill(0.0);
+        this.price_col      = Array(this.num_prices).fill(0.0);
+        this.bid_depth_col  = Array(this.num_prices).fill(0.0);
+        this.ask_depth_col  = Array(this.num_prices).fill(0.0);
+        this.bid_print_col  = Array(this.num_prices).fill(0.0);
+        this.ask_print_col  = Array(this.num_prices).fill(0.0);
+        this.ltq_col        = Array(this.num_prices).fill(0.0);
 
     }
 
 
     initailize_canvas() {
 
-        this.canvas_height  = (this.num_prices + 1) * this.row_height;
+        this.canvas.height  = (this.num_prices + 1) * this.row_height;
         this.canvas.width   = this.row_width;
-        this.canvas.height  = this.canvas_height;
+        
+        document.getElementById(`${this.symbol}_dom_container`).appendChild(this.canvas);
 
         this.ctx.lineWidth      = this.default_line_width;
         this.ctx.strokeStyle    = this.default_stroke_style;
@@ -203,7 +213,7 @@ class dom {
         [
             this.price_cell_offset,
             this.bid_depth_cell_offset,
-            this.bid_print_cell_ofsset,
+            this.bid_print_cell_offset,
             this.ask_print_cell_offset,
             this.ask_depth_cell_offset,
             this.ltq_cell_offset
@@ -219,12 +229,12 @@ class dom {
 
         // row lines + prices
 
-        x = this.price_cell_offset;
+        const x = this.price_cell_offset;
 
         for (var i = 0; i <= this.num_prices; i += 1) {
         
             const y       = (i + 1) * this.row_height;
-            const price   = this.max_price - i * this.tick_size;
+            const price   = (this.max_price - i) * this.tick_size;
 
             this.ctx.moveTo(0, y);
             this.ctx.lineTo(this.row_width, y);

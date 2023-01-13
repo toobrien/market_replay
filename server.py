@@ -80,13 +80,18 @@ if __name__ == "__main__":
 
         # this method won't work for all spreads -- replace with regex later
 
-        for key, multiplier in sym_config:
+        for key, multiplier in sym_config.items():
 
             if key in sym:
 
                 res["tick_size"] = multiplier
 
-        res["records"] = SymIt(sym, "2023-01-11").all()
+        res["records"] = SymIt(sym, date).all()
+
+        # make friendlier names
+        
+        sym = sym.split(".")[0] if "." in sym else sym
+        sym = sym.split("_")[0] if "_" in sym else sym
 
         symbol_data[sym] = res
 

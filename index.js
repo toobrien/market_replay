@@ -41,6 +41,9 @@ async function run(server) {
         );
         
     
+    dm = new dom_manager(doms);
+
+    dm.run();
 
 }
 
