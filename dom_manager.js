@@ -4,13 +4,13 @@ class dom_manager {
 
 
     static sc_to_unix_us = 2208988800000 * 1000;
-    // 13:59:59.503000
 
     doms             = null;
     update_ms        = null;
     utc_offset       = null;
     ts               = null;
     multiplier       = null;
+    interval_us      = null;
 
     latest_date_div  = null;
 
@@ -23,13 +23,13 @@ class dom_manager {
 
     constructor(doms, update_ms, utc_offset) {
 
-        this.doms       = doms;
-        this.update_ms  = update_ms;
-        this.utc_offset = parseInt(utc_offset);
-        this.ts         = Math.min(...(this.doms.map(d => { return d.get_ts(); })));
-        this.multiplier = 1.0;
-        this.interval   = this.multiplier * update_ms;
-        this.loop       = null;
+        this.doms           = doms;
+        this.update_ms      = update_ms;
+        this.utc_offset     = parseInt(utc_offset);
+        this.ts             = Math.min(...(this.doms.map(d => { return d.get_ts(); })));
+        this.multiplier     = 1.0;
+        this.interval_us    = this.multiplier * update_ms * 1000;
+        this.loop           = null;
         
         this.play_button                    = document.getElementById("play_button");
         this.play_button.innerHTML          = "play";
@@ -40,7 +40,7 @@ class dom_manager {
 
         this.timestamp_input                = document.getElementById("timestamp_input");
         this.timestamp_button               = document.getElementById("timestamp_button");
-        this.timestamp_button.onclick       = this.set_ts_from_date_string.bind(this);
+        this.timestamp_button.onclick       = this.set_ts.bind(this);
 
         this.speed_input                    = document.getElementById("speed_input");
         this.update_speed_button            = document.getElementById("speed_button");
@@ -51,13 +51,13 @@ class dom_manager {
     }
 
 
-    set_ts_from_date_string() {
+    set_ts() {
 
         const ts = this.date_string_to_ts(this.timestamp_input.value);
 
         if (ts < this.ts) {
 
-            for (const dom of doms)
+            for (const dom of this.doms)
 
                 dom.reset_to_ts(ts);
 
@@ -116,9 +116,9 @@ class dom_manager {
 
     set_multiplier() {
 
-        const new_multiplier = this.speed_input.value.parseFloat();
+        const new_multiplier = parseFloat(this.speed_input.value);
 
-        if (new_multiplier.isNaN()) {
+        if (isNaN(new_multiplier)) {
 
             window.alert("new speed must be a valid floating point number or integer");
 
@@ -126,9 +126,9 @@ class dom_manager {
 
         }
         
-        const new_interval = Math.trunc(this.update_ms * 1000 * new_multiplier);
+        const new_interval_us = Math.trunc(this.update_ms * 1000 * new_multiplier);
 
-        if (new_interval < 1) {
+        if (new_interval_us < 1) {
 
             window.alert("new speed is sub-microsecond; not supported");
 
@@ -137,7 +137,7 @@ class dom_manager {
         }
 
         this.multiplier = new_multiplier;
-        this.interval = new_interval;
+        this.interval_us = new_interval_us;
 
     }
 
@@ -150,14 +150,14 @@ class dom_manager {
         this.loop = setInterval(
             () => {
                 
-                this.ts = this.ts + this.interval;
+                this.ts = this.ts + this.interval_us;
 
                 this.doms.forEach(d => { d.update(this.ts); });
 
                 this.latest_date_div.innerHTML = this.ts_to_date_string(this.ts);
 
             },
-            this.interval
+            this.update_ms
         );
 
     }

@@ -471,9 +471,11 @@ class dom {
 
         const top_visible_price      = Math.floor(this.container.scrollTop / this.row_height);
         const bottom_visible_price   = Math.min(
-                                                    top_visible_cell + 
-                                                    Math.ceil(this.dom_height / this.row_height),
-                                                    this.num_prices - 1
+                                                    Math.ceil(
+                                                        top_visible_price + 
+                                                        Math.ceil(this.dom_height / this.row_height),
+                                                        this.num_prices - 1
+                                                    )
                                                 );
 
         this.draw(top_visible_price, bottom_visible_price);
