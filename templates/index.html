@@ -16,7 +16,33 @@
                 </tr>
                 <tr>
                     <td id = "control_cell" style = "vertical-align: top;">
-                        <button id = "play_button" style = "width: 50px;"></button>
+                        <table>
+                            <tr>
+                                <td></td>
+                                <td id = "latest_date_div"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button id = "timestamp_button" style = "width: 125px;">set timestamp</button>
+                                </td>
+                                <td>
+                                    <input type = "text" size = "25" id = "timestamp_input"></input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <button id = "speed_button" style = "width: 125px;">set speed</button>
+                                </td>
+                                <td>
+                                    <input type = "text" size = "25" id = "speed_input"></input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan = "2">
+                                    <button id = "play_button" style = "width: 125px;"></button>
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                     {% for symbol in symbols %}
                     <td id = "{{ symbol }}_dom_cell" style = "vertical-align: top;">
@@ -32,6 +58,7 @@
         const center_dom_key    = "{{ center_dom_key }}";
         const clear_prints_key  = "{{ clear_prints_key }}";
         const update_ms         = "{{ update_ms }}";
+        const utc_offset        = "{{ utc_offset }}";
     </script>
     <script src = "./dom.js"></script>
     <script src = "./dom_manager.js"></script>

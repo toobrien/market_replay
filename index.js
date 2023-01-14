@@ -1,15 +1,15 @@
 
 
-var dm = null;
+var     dm                  = null;
 
 
-async function run() {
+async function init() {
 
     var   res           = await fetch(`http://${server}/dom_config`);
     const dom_config    = await res.json();
 
-    res             = await fetch(`http://${server}/symbol_data`);
-    var symbol_data = await res.json();
+    res                 = await fetch(`http://${server}/symbol_data`);
+    var symbol_data     = await res.json();
 
     const doms = [];
 
@@ -61,7 +61,7 @@ async function run() {
 
     // start simulation
 
-    dm = new dom_manager(doms, update_ms);
+    dm = new dom_manager(doms, update_ms, utc_offset);
 
     document.getElementById("loading_screen").style.display = "none";
     document.getElementById("main_screen").style.display    = "inline";
@@ -69,5 +69,5 @@ async function run() {
 }
 
 
-run();
+init();
 

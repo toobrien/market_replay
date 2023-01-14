@@ -17,7 +17,6 @@ app_config      = loads(open("./app_config.json", "r").read())
 sym_config      = loads(open("./sym_config.json", "r").read())
 symbol_data     = {}
 
-
 dom_config["dimensions"]["dom_width"] = dom_config["dimensions"]["profile_cell_width"]      + \
                                         dom_config["dimensions"]["price_cell_width"]        + \
                                         dom_config["dimensions"]["depth_cell_width"] * 2    + \
@@ -52,7 +51,8 @@ def get_root():
                             server              = f"{app_config['hostname']}:{app_config['port']}",
                             center_dom_key      = app_config["center_dom_key"],
                             clear_prints_key    = app_config["clear_prints_key"],
-                            update_ms           = app_config["update_ms"]
+                            update_ms           = app_config["update_ms"],
+                            utc_offset          = app_config["utc_offset"]
                         )
 
 

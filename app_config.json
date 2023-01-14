@@ -4,5 +4,6 @@
   "port":             8080,
   "center_dom_key":   "q",
   "clear_prints_key": "w",
-  "update_ms":        10
+  "update_ms":        10,
+  "utc_offset":       -8
 }

@@ -63,6 +63,7 @@ class dom {
     bid_depth_col           = null;
     bid_print_col           = null;
     ask_print_col           = null;
+    dirty_col               = null;
     ltq_price               = null;
     ltq_qty                 = null;
     ltq_prev_price          = null;
@@ -134,9 +135,9 @@ class dom {
         this.initialize_offsets();
         this.initialize_price_range();
         this.prune_depth();
-        this.initialize_cols();
+        this.initialize_state();
         this.initialize_style_and_context(dom_config);
-        this.initailize_canvas();
+        this.initialize_canvas();
 
         if (records)
         
@@ -238,7 +239,7 @@ class dom {
     }
 
 
-    initialize_cols() {
+    initialize_state() {
         
         this.profile_col    = Array(this.num_prices).fill(0);
         this.price_col      = Array(this.num_prices).fill(0.0);
@@ -247,6 +248,10 @@ class dom {
         this.bid_print_col  = Array(this.num_prices).fill(0);
         this.ask_print_col  = Array(this.num_prices).fill(0);
         this.dirty_col      = Array(this.num_prices).fill(false);
+        this.ltq_price      = null;
+        this.ltq_qty        = null;
+        this.ltq_prev_price = null;
+        this.ltq_prev_qty   = null;
 
     }
 
@@ -272,7 +277,7 @@ class dom {
     }
 
 
-    initailize_canvas() {
+    initialize_canvas() {
 
         // create canvas and append to DOM to allow for scrolling in container
 
@@ -292,6 +297,15 @@ class dom {
         this.ctx.lineWidth      = this.default_line_width;
         this.ctx.strokeStyle    = this.grid_color;
         this.ctx.font           = this.font;
+
+        this.redraw_canvas();
+
+    }
+
+
+    redraw_canvas() {
+        
+        const t0 = performance.now();
 
         // outline canvas
 
@@ -317,10 +331,8 @@ class dom {
 
         // add grid lines and color cells
 
-        const t0 = performance.now();
-
         for (var i = 0; i <= this.num_prices; i += 1) {
-        
+
             const y       = (i + 1) * this.row_height;
             const price   = (this.max_price - i) * this.tick_size;
 
@@ -394,7 +406,7 @@ class dom {
 
         this.ctx.stroke();
 
-        console.log(`initial draw: ${performance.now() - t0}`);
+        console.log(`${this.symbol}\tredraw_canvas\t${performance.now() - t0}`);
 
     }
 
@@ -429,7 +441,7 @@ class dom {
 
     clear_prints() {
 
-
+        // ...
 
     }
 
@@ -441,14 +453,6 @@ class dom {
         if (this.it >= this.records.length)
 
             return;
-
-        if (ts < this.ts) {
-
-            this.reset_to_ts();
-
-            return;
-
-        }
 
         var rec = this.records[this.it];
         var processed = 0;
@@ -463,21 +467,52 @@ class dom {
 
         }
 
-        console.log(`processed ${processed}, in ${performance.now() - t0}`)
+        console.log(`${this.symbol}\tupdate\t${processed}\t${performance.now() - t0}`)
+
+        const top_visible_price      = Math.floor(this.container.scrollTop / this.row_height);
+        const bottom_visible_price   = Math.min(
+                                                    top_visible_cell + 
+                                                    Math.ceil(this.dom_height / this.row_height),
+                                                    this.num_prices - 1
+                                                );
+
+        this.draw(top_visible_price, bottom_visible_price);
 
     }
 
 
-    draw() {
+    draw(high_price, low_price) {
 
-        // ...
+        const   t0 = performance.now();
+        var     cells_drawn = 0;
+
+        for (var i = high_price; i >= low_price; i--) {
+
+            if (this.dirty_col[i]) {
+
+                // ... 
+
+                cells_drawn += 1;
+
+                this.dirty_col[i] = false;
+
+            }
+
+        }
+
+        console.log(`${this.symbol}\tdraw:\t${cells_drawn}\t${performance.now() - t0}`);
 
     }
 
 
-    reset_to_ts() { 
+    reset_to_ts(ts) { 
     
-        // 
+        this.ts = ts;
+        this.it = 0;
+
+        this.redraw_canvas();
+
+        this.initialize_state();
     
     }
 
