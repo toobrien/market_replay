@@ -63,11 +63,16 @@ class dom {
     bid_depth_col           = null;
     bid_print_col           = null;
     ask_print_col           = null;
+
     dirty_col               = null;
+    dirty_profile_col       = null;
+
     ltq_price               = null;
     ltq_qty                 = null;
     ltq_prev_price          = null;
     ltq_prev_qty            = null;
+
+    poc_qty                 = null;
 
     // dom graphics
 
@@ -111,6 +116,9 @@ class dom {
     center_line_color       = null;
     default_cell_color      = null;
 
+    profile_bar_color       = null;
+
+    default_cell_color      = null;
     price_text_color        = null;
     
     bid_depth_cell_color    = null;
@@ -122,14 +130,16 @@ class dom {
 
     constructor(symbol, records, tick_size, dom_config) {
 
-        this.symbol     = symbol;
-        this.it         = 0;
-        this.ts         = 0;
-        this.tick_size  = tick_size;
-        this.records    = records;
-        this.best_bid   = Number.MIN_VALUE;
-        this.best_ask   = Number.MAX_VALUE;
-        this.max_depth  = dom_config["depth"]["max_depth"];
+        this.symbol         = symbol;
+        this.it             = 0;
+        this.ts             = 0;
+        this.tick_size      = tick_size;
+        this.records        = records;
+        this.best_bid       = Number.MIN_VALUE;
+        this.best_ask       = Number.MAX_VALUE;
+        this.session_high   = Number.MIN_VALUE;
+        this.session_low    = Number.MAX_VALUE;
+        this.max_depth      = dom_config["depth"]["max_depth"];
 
         this.initialize_dimensions(dom_config);
         this.initialize_offsets();
@@ -241,17 +251,36 @@ class dom {
 
     initialize_state() {
         
-        this.profile_col    = Array(this.num_prices).fill(0);
-        this.price_col      = Array(this.num_prices).fill(0.0);
-        this.bid_depth_col  = Array(this.num_prices).fill(0);
-        this.ask_depth_col  = Array(this.num_prices).fill(0);
-        this.bid_print_col  = Array(this.num_prices).fill(0);
-        this.ask_print_col  = Array(this.num_prices).fill(0);
-        this.dirty_col      = Array(this.num_prices).fill(false);
-        this.ltq_price      = null;
-        this.ltq_qty        = null;
-        this.ltq_prev_price = null;
-        this.ltq_prev_qty   = null;
+
+        if (!this.profile_col) {
+
+            this.profile_col        = Array(this.num_prices).fill(0);
+            this.price_col          = Array(this.num_prices).fill(0.0);
+            this.bid_depth_col      = Array(this.num_prices).fill(0);
+            this.ask_depth_col      = Array(this.num_prices).fill(0);
+            this.bid_print_col      = Array(this.num_prices).fill(0);
+            this.ask_print_col      = Array(this.num_prices).fill(0);
+            this.dirty_col          = Array(this.num_prices).fill(false);
+            this.dirty_profile_col  = Array(this.num_prices).fill(false);
+            
+        } else {
+
+            this.profile_col.fill(0);
+            this.price_col.fill(0.0);
+            this.bid_depth_col.fill(0);
+            this.ask_depth_col.fill(0);
+            this.bid_print_col.fill(0);
+            this.ask_print_col.fill(0);
+            this.dirty_col.fill(false);
+            this.dirty_profile_col.fill(false);
+
+        }
+        
+        this.ltq_price          = null;
+        this.ltq_qty            = null;
+        this.ltq_prev_price     = null;
+        this.ltq_prev_qty       = null;
+        this.poc_qty            = -1;
 
     }
 
@@ -264,11 +293,15 @@ class dom {
 
         this.grid_color             = dom_config["colors"]["grid_color"];
         this.center_line_color      = dom_config["colors"]["center_line_color"];
+        
         this.default_cell_color     = dom_config["colors"]["default_cell_color"];
+
+        this.profile_bar_color      = dom_config["colors"]["profile_bar_color"];
 
         this.bid_depth_cell_color   = dom_config["colors"]["bid_depth_cell_color"];
         this.ask_depth_cell_color   = dom_config["colors"]["ask_depth_cell_color"];
 
+        this.default_text_color     = dom_config["colors"]["default_text_color"];
         this.price_text_color       = dom_config["colors"]["price_text_color"];
         
         this.session_high_color     = dom_config["colors"]["session_high_color"];
@@ -454,8 +487,8 @@ class dom {
 
             return;
 
-        var rec = this.records[this.it];
-        var processed = 0;
+        var rec         = this.records[this.it];
+        var processed   = 0;
 
         while (rec[dom.t_ts] < ts && this.it < this.records.length) {
 
@@ -463,7 +496,54 @@ class dom {
             this.ts = rec[dom.t_ts];
 
             processed += 1;
-            // ...
+
+            if (rec.length === dom.t_len) {
+
+                // process tas record
+
+                const price = rec[dom.t_price];
+                const qty   = rec[dom.t_qty];
+                const side  = rec[dom.t_side];
+
+                const i     = this.max_price - price;
+
+                this.dirty_col[i]           = true;
+                this.dirty_profile_col[i]   = true;
+
+                // session high/low
+
+                this.session_high = i > this.session_high ? i : this.session_high;
+                this.session_low  = i < this.session_low  ? i : this.session_low;
+
+                // profile
+
+                this.profile_col[i] += qty;
+                
+                if (this.profile_col[i] > this.poc_qty) {
+
+                    this.dirty_profile_col.fill(true, this.session_high, this.session_low + 1);
+
+                    this.poc_qty = this.profile_col[i];
+
+                }
+                
+                // price
+
+                // bid depth
+
+                // bid print
+
+                // ask print
+
+                // ask depth
+
+                // ltq
+
+            } else {
+
+                // process depth record
+
+            }
 
         }
 
@@ -471,11 +551,8 @@ class dom {
 
         const top_visible_price      = Math.floor(this.container.scrollTop / this.row_height);
         const bottom_visible_price   = Math.min(
-                                                    Math.ceil(
-                                                        top_visible_price + 
-                                                        Math.ceil(this.dom_height / this.row_height),
-                                                        this.num_prices - 1
-                                                    )
+                                                    top_visible_price + Math.ceil(this.dom_height / this.row_height),
+                                                    this.num_prices - 1
                                                 );
 
         this.draw(top_visible_price, bottom_visible_price);
@@ -485,20 +562,59 @@ class dom {
 
     draw(high_price, low_price) {
 
-        const   t0 = performance.now();
+        const   t0          = performance.now();
         var     cells_drawn = 0;
+        var     y           = 0;
 
-        for (var i = high_price; i >= low_price; i--) {
+        for (var i = high_price; i <= low_price; i++) {
+
+            y = (i + 1) * this.row_height;
 
             if (this.dirty_col[i]) {
 
                 // ... 
 
+            }
+
+            if (this.dirty_profile_col[i]) {
+
+                // single price marked profile dirty when it trades; all prices when poc changes
+
+                const profile_bar_width = Math.ceil(this.profile_col[i] / this.poc_qty * this.profile_cell_width);
+                const profile_text      = String(this.profile_col[i]);
+
+                this.ctx.fillStyle = this.profile_bar_color;
+
+                this.ctx.fillRect(
+                    this.profile_cell_offset,
+                    y - this.row_height,
+                    profile_bar_width,
+                    this.row_height
+                );
+
+                this.ctx.fillStyle = this.default_cell_color;
+
+                this.ctx.fillRect(
+                    this.profile_cell_offset + profile_bar_width,
+                    y - this.row_height,
+                    this.profile_cell_width - profile_bar_width,
+                    this.row_height
+                );
+
+                this.ctx.fillStyle = this.profile_text_color;
+
+                this.ctx.fillText(
+                    profile_text,
+                    this.profile_cell_offset + this.text_margin, 
+                    y - this.text_margin
+                );
+
                 cells_drawn += 1;
 
-                this.dirty_col[i] = false;
-
             }
+
+            this.dirty_col[i]           = false;
+            this.dirty_profile_col[i]   = false;
 
         }
 

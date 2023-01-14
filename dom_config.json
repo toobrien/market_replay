@@ -17,11 +17,13 @@
         "font":                 "8px Terminal"
     },
     "colors": {
-        "grid_color":           "#dddddd",
+        "grid_color":           "#bbbbbb",
         "center_line_color":    "#000000",
-        "default_cell_color":   "#eeeeee",
+        "default_cell_color":   "#dddddd",
+        "profile_bar_color":    "#004999",
         "bid_depth_cell_color": "#1984c5",
         "ask_depth_cell_color": "#c23728",
+        "default_text_color":   "#FFFFFF",
         "price_text_color":     "#000000",
         "session_high_color":   "#c23728",
         "session_low_color":    "#1984c5"
