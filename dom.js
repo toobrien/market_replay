@@ -406,7 +406,7 @@ class dom {
 
         this.ctx.stroke();
 
-        console.log(`${this.symbol}\tredraw_canvas\t${performance.now() - t0}`);
+        // console.debug(`${this.symbol}\tredraw_canvas\t${performance.now() - t0}`);
 
     }
 
@@ -467,7 +467,7 @@ class dom {
 
         }
 
-        console.log(`${this.symbol}\tupdate\t${processed}\t${performance.now() - t0}`)
+        // console.debug(`${this.symbol}\tupdate\t${processed}\t${performance.now() - t0}`)
 
         const top_visible_price      = Math.floor(this.container.scrollTop / this.row_height);
         const bottom_visible_price   = Math.min(
@@ -502,7 +502,7 @@ class dom {
 
         }
 
-        console.log(`${this.symbol}\tdraw:\t${cells_drawn}\t${performance.now() - t0}`);
+        // console.debug(`${this.symbol}\tdraw:\t${cells_drawn}\t${performance.now() - t0}`);
 
     }
 
