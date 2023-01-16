@@ -11,6 +11,8 @@ class dom_manager {
     ts               = null;
     multiplier       = null;
     interval_us      = null;
+    date             = null;
+    loop             = null;
 
     latest_date_div  = null;
 
@@ -29,6 +31,7 @@ class dom_manager {
         this.ts             = Math.min(...(this.doms.map(d => { return d.get_ts(); })));
         this.multiplier     = 1.0;
         this.interval_us    = this.multiplier * update_ms * 1000;
+        this.date           = new Date();
         this.loop           = null;
         
         this.play_button                    = document.getElementById("play_button");
@@ -72,40 +75,40 @@ class dom_manager {
 
         const   us    = (ts % 1000).toString().padStart(3, "0");
         const   ms    = (ts - dom_manager.sc_to_unix_us) / 1000;
-        const   dt    = new Date(ms);
         
-        dt.setUTCHours(dt.getUTCHours() + this.utc_offset)
+        this.date.setTime(ms);
         
-        var ds = dt.toISOString();
+        this.date.setUTCHours(this.date.getUTCHours() + this.utc_offset);
+        
+        var ds = this.date.toISOString();
 
         ds = ds.slice(0,-1) + us + "Z"
 
         return ds;
     
     }
-    
-    
+
+
     date_string_to_ts(ds) {
 
-        const   dt              = new Date(ds.slice(0,-4) + "Z");
-
-        const   us              = parseInt(ds.slice(-4,-1));
-        const   time            = ds.slice(11, 23);
-        const   parts           = time.split(":");
-        const   sec_ms          = parts[2].split(".");
+        const   year            = atoi(ds, 0, 4);
+        const   month           = atoi(ds, 5, 7);
+        const   day             = atoi(ds, 8, 10)
+        const   hours           = atoi(ds, 11, 13);
+        const   minutes         = atoi(ds, 14, 16);
+        const   seconds         = atoi(ds, 17, 19);
+        const   milliseconds    = atoi(ds, 20, 23);
+        const   us              = atoi(ds, 23, 26);
         
-        const   hours           = parseInt(parts[0]);
-        const   minutes         = parseInt(parts[1]);
-        const   seconds         = parseInt(sec_ms[0]);
-        const   milliseconds    = parseInt(sec_ms[1]);
+        this.date.setUTCFullYear(year);
+        this.date.setUTCMonth(month);
+        this.date.setUTCDate(day);
+        this.date.setUTCHours(hours - this.utc_offset);
+        this.date.setUTCMinutes(minutes);
+        this.date.setUTCSeconds(seconds);
+        this.date.setUTCMilliseconds(milliseconds);
 
-        
-        dt.setUTCHours(hours - this.utc_offset);
-        dt.setUTCMinutes(minutes);
-        dt.setUTCSeconds(seconds);
-        dt.setUTCMilliseconds(milliseconds);
-
-        var ts = dt.getTime() * 1000;
+        var ts = this.date.getTime() * 1000;
         
         ts = ts + dom_manager.sc_to_unix_us + us;
 

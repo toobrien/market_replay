@@ -74,6 +74,9 @@ class dom {
 
     poc_qty                 = null;
 
+    num_prices              = null;
+    price_text_arr          = null;
+
     // dom graphics
 
     canvas                  = null;
@@ -84,6 +87,11 @@ class dom {
 
     row_height              = null;
     row_width               = null;
+    row_offset              = null;
+    
+    cell_height             = null;
+
+    grid_adjustment         = null;
 
     text_margin             = null;
 
@@ -158,11 +166,15 @@ class dom {
 
     initialize_dimensions(dom_config) {
 
+        this.grid_adjustment        = dom_config["style"]["default_line_width"];
+
         this.text_margin            = dom_config["dimensions"]["text_margin"];
 
         this.dom_height             = dom_config["dimensions"]["dom_height"];
         this.row_height             = dom_config["dimensions"]["row_height"];
         this.row_width              = dom_config["dimensions"]["row_width"];
+        
+        this.cell_height            = this.row_height - this.grid_adjustment;
 
         this.profile_cell_width     = dom_config["dimensions"]["profile_cell_width"];
 
@@ -184,6 +196,7 @@ class dom {
 
         // x-offsets of each cell
 
+        this.row_offset             = this.grid_adjustment;
         this.profile_cell_offset    = 0;
         this.price_cell_offset      = this.profile_cell_offset + this.profile_cell_width;
         this.bid_depth_cell_offset  = this.price_cell_offset + this.price_cell_width;
@@ -213,7 +226,7 @@ class dom {
 
         }
 
-        // initialize last_price == first price
+        // set last_price == first price
 
         for (const rec of this.records) {
 
@@ -229,8 +242,19 @@ class dom {
 
         this.max_price = this.max_price + this.max_depth;
         this.min_price = this.min_price - this.max_depth;
+        this.num_prices = this.max_price - this.min_price + 1;
 
-        this.num_prices = this.max_price - this.min_price;
+        // fill price text array with all prices here to avoid dynamic allocations
+
+        this.price_text_arr = new Array(this.num_prices);
+        var price           = 0.0;
+
+        for (let i = 0; i < this.num_prices; i++) {
+
+            price = (this.max_price - i) * this.tick_size;
+            this.price_text_arr[i] = String(price.toFixed(this.price_precision)).padStart(this.price_char_width);
+
+        }
 
     }
 
@@ -318,7 +342,7 @@ class dom {
         this.canvas.id  = `${this.symbol}_dom`;
         this.ctx        = this.canvas.getContext("2d");
 
-        this.canvas_height  = (this.num_prices + 1) * this.row_height;
+        this.canvas_height  = this.num_prices * this.row_height;
         this.canvas.height  = this.canvas_height;
         this.canvas.width   = this.row_width;
         this.container      = document.getElementById(`${this.symbol}_dom_container`);
@@ -344,95 +368,78 @@ class dom {
 
         this.ctx.strokeRect(0, 0, this.row_width, this.canvas_height);
 
-        // column lines
-
-        [
-            this.price_cell_offset,
-            this.bid_depth_cell_offset,
-            this.bid_print_cell_offset,
-            this.ask_print_cell_offset,
-            this.ask_depth_cell_offset,
-            this.ltq_cell_offset
-        ].forEach(
-            offset => {
-                
-                this.ctx.moveTo(offset, 0);
-                this.ctx.lineTo(offset, this.canvas_height);
-
-            }
-        );
-
         // add grid lines and color cells
 
-        for (var i = 0; i <= this.num_prices; i += 1) {
+        for (var i = 0; i < this.num_prices; i++) {
 
-            const y       = (i + 1) * this.row_height;
-            const price   = (this.max_price - i) * this.tick_size;
+            var y = i * this.row_height;
 
             this.ctx.moveTo(0, y);
             this.ctx.lineTo(this.row_width, y);
+
+            y += this.row_offset
 
             this.ctx.fillStyle = this.default_cell_color;
 
             this.ctx.fillRect(
                 this.profile_cell_offset, 
-                y - this.row_height, 
+                y,
                 this.profile_cell_width, 
-                this.row_height
+                this.cell_height
             );
 
             this.ctx.fillRect(
                 this.price_cell_offset, 
-                y - this.row_height, 
+                y,
                 this.price_cell_width, 
-                this.row_height
+                this.cell_height
             );
 
             this.ctx.fillRect(
                 this.bid_print_cell_offset, 
-                y - this.row_height, 
+                y, 
                 this.print_cell_width, 
-                this.row_height
+                this.cell_height
             );
 
             this.ctx.fillRect(
                 this.ask_print_cell_offset, 
-                y - this.row_height, 
+                y, 
                 this.print_cell_width, 
-                this.row_height
+                this.cell_height
             );
 
             this.ctx.fillRect(
                 this.ltq_cell_offset, 
-                y - this.row_height, 
+                y, 
                 this.ltq_cell_width, 
-                this.row_height
+                this.cell_height
             );
 
             this.ctx.fillStyle = this.price_text_color;
 
             this.ctx.fillText(
-                String(price.toFixed(this.price_precision)).padStart(this.price_char_width), 
+                this.price_text_arr[i], 
                 this.price_cell_offset + this.text_margin, 
-                y - this.text_margin
+                y + this.cell_height - this.text_margin
             );
 
             this.ctx.fillStyle = this.bid_depth_cell_color;
 
             this.ctx.fillRect(
                 this.bid_depth_cell_offset, 
-                y - this.row_height, 
+                y, 
                 this.depth_cell_width, 
-                this.row_height
+                this.cell_height
             );
 
             this.ctx.fillStyle = this.ask_depth_cell_color;
 
             this.ctx.fillRect(
                 this.ask_depth_cell_offset, 
-                y - this.row_height, 
+                y, 
                 this.depth_cell_width, 
-                this.row_height
+                this.cell_height
             );
 
         }
@@ -568,7 +575,7 @@ class dom {
 
         for (var i = high_price; i <= low_price; i++) {
 
-            y = (i + 1) * this.row_height;
+            y = i * this.row_height + this.row_offset;
 
             if (this.dirty_col[i]) {
 
@@ -581,32 +588,31 @@ class dom {
                 // single price marked profile dirty when it trades; all prices when poc changes
 
                 const profile_bar_width = Math.ceil(this.profile_col[i] / this.poc_qty * this.profile_cell_width);
-                const profile_text      = String(this.profile_col[i]);
 
                 this.ctx.fillStyle = this.profile_bar_color;
 
                 this.ctx.fillRect(
                     this.profile_cell_offset,
-                    y - this.row_height,
+                    y,
                     profile_bar_width,
-                    this.row_height
+                    this.cell_height
                 );
 
                 this.ctx.fillStyle = this.default_cell_color;
 
                 this.ctx.fillRect(
                     this.profile_cell_offset + profile_bar_width,
-                    y - this.row_height,
+                    y,
                     this.profile_cell_width - profile_bar_width,
-                    this.row_height
+                    this.cell_height
                 );
 
                 this.ctx.fillStyle = this.profile_text_color;
 
                 this.ctx.fillText(
-                    profile_text,
+                    itoa_arr[this.profile_col[i]],
                     this.profile_cell_offset + this.text_margin, 
-                    y - this.text_margin
+                    y + this.cell_height - this.text_margin
                 );
 
                 cells_drawn += 1;

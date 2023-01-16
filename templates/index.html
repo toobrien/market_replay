@@ -54,11 +54,38 @@
         </div>
     </body>
     <script>
+
         const server            = "{{ server }}";
         const center_dom_key    = "{{ center_dom_key }}";
         const clear_prints_key  = "{{ clear_prints_key }}";
         const update_ms         = "{{ update_ms }}";
         const utc_offset        = "{{ utc_offset }}";
+
+        // utility functions for reducing string allocation
+        //   - for use with fillText()
+        //   - increase MAX_ITOA if crashing (should be rare)
+
+        const MAX_ITOA = 500000;
+
+        const itoa_arr = new Array(MAX_ITOA);
+
+        for (let i = 0; i < itoa_arr.length; i++)
+
+            itoa_arr[i] = i.toString();
+
+
+        function atoi(str, i, j) {
+
+            let result = 0;
+
+            for (; i < j; i++)
+
+                result = result * 10 + (str.charAt(i).charCodeAt(0) - 48);
+
+            return result;
+
+        }
+
     </script>
     <script src = "./dom.js"></script>
     <script src = "./dom_manager.js"></script>
