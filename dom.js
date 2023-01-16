@@ -51,6 +51,7 @@ class dom {
     
     best_bid                = null;
     best_ask                = null;
+    max_lob_qty             = null;
     last_price              = null;
     
     prev_center_line_y      = null;
@@ -128,7 +129,9 @@ class dom {
     price_text_color        = null;
     
     bid_depth_cell_color    = null;
+    bid_depth_qty_color     = null;
     ask_depth_cell_color    = null;
+    ask_depth_qty_color     = null;
 
     session_high_color      = null;
     session_low_color       = null;
@@ -180,6 +183,8 @@ class dom {
         this.price_cell_color       = dom_config["style"]["price_cell_color"];
 
         this.depth_cell_width       = dom_config["dimensions"]["depth_cell_width"];
+        this.bid_depth_qty_color    = dom_config["colors"]["bid_depth_qty_color"];
+        this.ask_depth_qty_color    = dom_config["colors"]["ask_depth_qty_color"];
 
         this.print_cell_width       = dom_config["dimensions"]["print_cell_width"];
         
@@ -301,6 +306,7 @@ class dom {
         this.ltq_prev_price     = null;
         this.ltq_prev_qty       = null;
         this.poc_qty            = -1;
+        this.max_lob_qty        = 1;
 
     }
 
@@ -497,25 +503,30 @@ class dom {
 
             return;
 
-        var rec         = this.records[this.it];
-        var processed   = 0;
+        var rec             = this.records[this.it];
+        var price           = null;
+        var qty             = null;
+        var i               = null;
+        var side            = null;
+        var tas_processed   = 0;
+        var depth_processed = 0;
 
         while (rec[dom.t_ts] < ts && this.it < this.records.length) {
 
             rec     = this.records[this.it++];
             this.ts = rec[dom.t_ts];
 
-            processed += 1;
-
             if (rec.length === dom.t_len) {
 
                 // process tas record
 
-                const price = rec[dom.t_price];
-                const qty   = rec[dom.t_qty];
-                const side  = rec[dom.t_side];
+                tas_processed += 1;
 
-                const i     = this.max_price - price;
+                price = rec[dom.t_price];
+                qty   = rec[dom.t_qty];
+                side  = rec[dom.t_side];
+
+                i = this.max_price - price;
 
                 this.last_price = i;
 
@@ -541,13 +552,9 @@ class dom {
                 
                 // price
 
-                // bid depth
-
                 // bid print
 
                 // ask print
-
-                // ask depth
 
                 // ltq
 
@@ -555,10 +562,188 @@ class dom {
 
                 // process depth record
 
+                depth_processed += 1;
+
+                price = rec[dom.d_price];
+                qty   = rec[dom.d_qty];
+                i     = this.max_price - price;
+
+                switch (rec[dom.d_cmd]) {
+
+                    case dom.dc_none:
+
+                        break;
+
+                    case dom.dc_clear:
+
+                        this.bid_depth_col.fill(0);
+                        this.ask_depth_col.fill(0);
+
+                        this.best_bid       = Number.MIN_SAFE_INTEGER;
+                        this.best_ask       = Number.MAX_SAFE_INTEGER;
+
+                        this.max_lob_qty    = 1;
+
+                        // i think this only happens at the start of the file,
+                        // so no need to dirty anything?
+
+                    case dom.dc_add_bid:
+
+                        this.bid_depth_col[i]   = qty;
+                        this.dirty_col[i]       = true;
+                        
+                        if (this.max_lob_qty < qty) {
+
+                            this.max_lob_qty = qty;
+                            this.dirty_col.fill(true);
+
+                        }
+
+                        if (i < this.best_bid) {
+
+                            this.best_bid = i;
+                            this.dirty_col.fill(this.best_ask, this.best_bid);
+
+                        }
+
+                        break;
+
+                    case dom.dc_add_ask:
+
+                        this.ask_depth_col[i] = qty;
+                        this.dirty_col[i]     = true;
+
+                        if (this.max_lob_qty < qty) {
+
+                            this.max_lob_qty = qty;
+                            this.dirty_col.fill(true);
+
+                        }
+                        
+                        if (i > this.best_ask) {
+
+                            this.best_ask = i;
+                            this.dirty_col.fill(this.best_ask, this.best_bid);
+
+                        }
+
+                        break;
+
+                    case dom.dc_mod_bid:
+
+                        var old_qty = this.bid_depth_col[i];
+
+                        if (this.max_lob_qty < qty) {
+
+                            this.max_lob_qty = qty;
+                            this.dirty_col.fill(true);
+
+                        }
+                        
+                        if (old_qty > this.max_lob_qty) {
+
+                            this.max_lob_qty = Math.max(...this.bid_depth_qty, ...ask_depth_qty, qty);
+                            this.dirty_col.fill(true);
+
+                        }
+
+                        this.bid_depth_col[i]   = qty;
+                        this.dirty_col[i]       = true;
+
+                        break;
+
+                    case dom.dc_mod_ask:
+
+                        var old_qty = this.ask_depth_col[i];
+
+                        if (this.max_lob_qty < qty) {
+
+                            this.max_lob_qty = qty;
+                            this.dirty_col.fill(true);
+
+                        }
+                        
+                        if (old_qty > this.max_lob_qty) {
+
+                            this.max_lob_qty = Math.max(...this.bid_depth_qty, ...ask_depth_qty, qty);
+                            this.dirty_col.fill(true);
+
+                        }
+
+                        this.ask_depth_col[i]   = qty;
+                        this.dirty_col[i]       = true;
+
+                        break;
+
+                    case dom.dc_del_bid:
+
+                        if (qty == this.max_lob_qty) {
+
+                            this.max_lob_qty = Math.max(...bid_depth_qty, ...ask_depth_qty);
+                            this.dirty_col.fill(true);
+                        }
+
+                        this.bid_depth_col[i]   = 0;
+                        this.dirty_col[i]       = true;
+
+                        if (i == this.best_bid) {
+
+                            for (var j = i; j < this.num_prices; j++) {
+
+                                if (this.bid_depth_col[j] != 0) {
+
+                                    this.best_bid = j;
+                                    
+                                    break;
+
+                                }
+
+                            }
+
+                        }
+
+                        break;
+
+                    case dom.dc_del_ask:
+
+                        if (qty == this.max_lob_qty) {
+
+                            this.max_lob_qty = Math.max(...bid_depth_qty, ...ask_depth_qty);
+                            this.dirty_col.fill(true);
+                        }
+
+                        this.ask_depth_col[i]   = 0;
+                        this.dirty_col[i]       = true;
+
+                        if (i == this.best_ask) {
+
+                            for (var j = i; j >= 0; j--) {
+
+                                if (this.ask_depth_col[j] != 0) {
+
+                                    this.best_ask = j;
+                                    
+                                    break;
+
+                                }
+
+                            }
+
+                        }
+
+                        break;
+
+                    default:
+
+                        break;
+
+                }
+
             }
 
         }
 
+        console.log(`${this.symbol}\t${tas_processed}\,\t${depth_processed}`);
         // console.debug(`${this.symbol}\tupdate\t${processed}\t${performance.now() - t0}`)
 
         const top_visible_price      = Math.floor(this.container.scrollTop / this.row_height);
@@ -584,7 +769,89 @@ class dom {
 
             if (this.dirty_col[i]) {
 
-                // ... 
+                // bid depth background
+
+                this.ctx.fillStyle = this.bid_depth_cell_color;
+
+                this.ctx.fillRect(
+                    this.bid_depth_cell_offset,
+                    y,
+                    this.depth_cell_width,
+                    this.row_height
+                );
+                
+                var bid_depth_qty = this.bid_depth_col[i];
+
+                if (bid_depth_qty > 0) {
+
+                    // bid depth bar
+
+                    var bid_depth_qty_width = Math.ceil(bid_depth_qty / this.max_lob_qty * this.depth_cell_width);
+
+                    this.ctx.fillStyle = this.bid_depth_qty_color;
+    
+                    this.ctx.fillRect(
+                        this.bid_depth_cell_offset,
+                        y,
+                        bid_depth_qty_width,
+                        this.row_height
+                    );
+    
+                    // bid depth text
+    
+                    this.ctx.fillStyle = this.default_text_color;
+
+                    this.ctx.fillText(
+                        itoa_arr[bid_depth_qty],
+                        this.bid_depth_cell_offset + this.text_margin, 
+                        y + this.row_height - this.text_margin
+                    );
+
+                }
+
+                cells_drawn += 1;
+
+                // ask depth background
+
+                this.ctx.fillStyle = this.ask_depth_cell_color;
+
+                this.ctx.fillRect(
+                    this.ask_depth_cell_offset,
+                    y,
+                    this.depth_cell_width,
+                    this.row_height
+                );
+                
+                var ask_depth_qty = this.ask_depth_col[i];
+
+                if (ask_depth_qty > 0) {
+
+                    // bid depth bar
+
+                    var ask_depth_qty_width = Math.ceil(ask_depth_qty / this.max_lob_qty * this.depth_cell_width);
+
+                    this.ctx.fillStyle = this.ask_depth_qty_color;
+    
+                    this.ctx.fillRect(
+                        this.ask_depth_cell_offset + (this.depth_cell_width - ask_depth_qty_width),
+                        y,
+                        ask_depth_qty_width,
+                        this.row_height
+                    );
+    
+                    // bid depth text
+    
+                    this.ctx.fillStyle = this.default_text_color;
+
+                    this.ctx.fillText(
+                        itoa_arr[ask_depth_qty],
+                        this.ask_depth_cell_offset + this.text_margin, 
+                        y + this.row_height - this.text_margin
+                    );
+
+                }
+
+                cells_drawn += 1;
 
             }
 
@@ -623,6 +890,8 @@ class dom {
                 cells_drawn += 1;
 
             }
+
+            // clear dirty
 
             this.dirty_col[i]           = false;
             this.dirty_profile_col[i]   = false;
