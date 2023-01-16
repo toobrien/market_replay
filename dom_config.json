@@ -17,7 +17,7 @@
         "font":                 "8px Terminal"
     },
     "colors": {
-        "grid_color":           "#aaaaaa",
+        "grid_color":           "#bbbbbb",
         "center_line_color":    "#000000",
         "default_cell_color":   "#dddddd",
         "profile_bar_color":    "#004999",

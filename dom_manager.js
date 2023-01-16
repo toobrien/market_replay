@@ -101,7 +101,7 @@ class dom_manager {
         const   us              = atoi(ds, 23, 26);
         
         this.date.setUTCFullYear(year);
-        this.date.setUTCMonth(month);
+        this.date.setUTCMonth(month - 1);
         this.date.setUTCDate(day);
         this.date.setUTCHours(hours - this.utc_offset);
         this.date.setUTCMinutes(minutes);

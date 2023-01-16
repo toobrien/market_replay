@@ -88,8 +88,6 @@ class dom {
     row_height              = null;
     row_width               = null;
     row_offset              = null;
-    
-    cell_height             = null;
 
     grid_adjustment         = null;
 
@@ -173,8 +171,6 @@ class dom {
         this.dom_height             = dom_config["dimensions"]["dom_height"];
         this.row_height             = dom_config["dimensions"]["row_height"];
         this.row_width              = dom_config["dimensions"]["row_width"];
-        
-        this.cell_height            = this.row_height - this.grid_adjustment;
 
         this.profile_cell_width     = dom_config["dimensions"]["profile_cell_width"];
 
@@ -340,7 +336,9 @@ class dom {
 
         this.canvas     = document.createElement("canvas");
         this.canvas.id  = `${this.symbol}_dom`;
-        this.ctx        = this.canvas.getContext("2d");
+        
+        this.ctx                        = this.canvas.getContext("2d");
+        this.ctx.imageSmoothingEnabled  = false;
 
         this.canvas_height  = this.num_prices * this.row_height;
         this.canvas.height  = this.canvas_height;
@@ -351,8 +349,8 @@ class dom {
         
         // initialize context with defaults
 
-        this.ctx.lineWidth      = this.default_line_width;
-        this.ctx.strokeStyle    = this.grid_color;
+        this.ctx.lineWidth      = this.lineWidth;
+        this.ctx.lineWidth      = 0;
         this.ctx.font           = this.font;
 
         this.redraw_canvas();
@@ -362,22 +360,22 @@ class dom {
 
     redraw_canvas() {
         
-        const t0 = performance.now();
+        // const t0 = performance.now();
 
-        // outline canvas
+        // fill background
 
-        this.ctx.strokeRect(0, 0, this.row_width, this.canvas_height);
+        this.ctx.fillStyle = this.grid_color;
 
-        // add grid lines and color cells
+        this.ctx.fillRect(
+            0, 0, 
+            this.row_width, this.canvas_height
+        );
+        
+        // color cells
 
         for (var i = 0; i < this.num_prices; i++) {
 
-            var y = i * this.row_height;
-
-            this.ctx.moveTo(0, y);
-            this.ctx.lineTo(this.row_width, y);
-
-            y += this.row_offset
+            var y = i * (this.row_height + this.row_offset);
 
             this.ctx.fillStyle = this.default_cell_color;
 
@@ -385,35 +383,35 @@ class dom {
                 this.profile_cell_offset, 
                 y,
                 this.profile_cell_width, 
-                this.cell_height
+                this.row_height
             );
 
             this.ctx.fillRect(
                 this.price_cell_offset, 
                 y,
                 this.price_cell_width, 
-                this.cell_height
+                this.row_height
             );
 
             this.ctx.fillRect(
                 this.bid_print_cell_offset, 
                 y, 
                 this.print_cell_width, 
-                this.cell_height
+                this.row_height
             );
 
             this.ctx.fillRect(
                 this.ask_print_cell_offset, 
                 y, 
                 this.print_cell_width, 
-                this.cell_height
+                this.row_height
             );
 
             this.ctx.fillRect(
                 this.ltq_cell_offset, 
                 y, 
                 this.ltq_cell_width, 
-                this.cell_height
+                this.row_height
             );
 
             this.ctx.fillStyle = this.price_text_color;
@@ -421,7 +419,7 @@ class dom {
             this.ctx.fillText(
                 this.price_text_arr[i], 
                 this.price_cell_offset + this.text_margin, 
-                y + this.cell_height - this.text_margin
+                y + this.row_height - this.text_margin
             );
 
             this.ctx.fillStyle = this.bid_depth_cell_color;
@@ -430,7 +428,7 @@ class dom {
                 this.bid_depth_cell_offset, 
                 y, 
                 this.depth_cell_width, 
-                this.cell_height
+                this.row_height
             );
 
             this.ctx.fillStyle = this.ask_depth_cell_color;
@@ -439,35 +437,39 @@ class dom {
                 this.ask_depth_cell_offset, 
                 y, 
                 this.depth_cell_width, 
-                this.cell_height
+                this.row_height
             );
 
         }
 
-        this.ctx.stroke();
-
         // console.debug(`${this.symbol}\tredraw_canvas\t${performance.now() - t0}`);
+
 
     }
 
 
     center_dom() {
 
-        const y         = (this.max_price - this.last_price) * this.row_height;
+        // redraw everything ... bad solution, fix later
+
+        this.reset_to_ts(0);
+
+        const y         = this.last_price * (this.row_height + this.row_offset) - this.row_offset;
         const offset    = Math.round(0.5 * this.dom_height);
 
         this.container.scrollTo(0, y - offset);
 
         this.ctx.beginPath()
-        this.ctx.strokeStyle = this.center_line_color;
+        this.ctx.fillStyle = this.center_line_color;
         this.ctx.moveTo(0, y);
         this.ctx.lineTo(this.row_width, y);
         this.ctx.stroke();
 
+        /*
         if (this.prev_center_line_y) {
 
             this.ctx.beginPath();
-            this.ctx.strokeStyle = this.grid_color;
+            this.ctx.fillStyle = this.grid_color;
             this.ctx.moveTo(0, this.prev_center_line_y);
             this.ctx.lineTo(this.row_width, this.prev_center_line_y);
             this.ctx.stroke();
@@ -475,6 +477,7 @@ class dom {
         }
 
         this.prev_center_line_y = y;
+        */
 
     }
 
@@ -514,13 +517,15 @@ class dom {
 
                 const i     = this.max_price - price;
 
+                this.last_price = i;
+
                 this.dirty_col[i]           = true;
                 this.dirty_profile_col[i]   = true;
 
                 // session high/low
 
-                this.session_high = i > this.session_high ? i : this.session_high;
-                this.session_low  = i < this.session_low  ? i : this.session_low;
+                this.session_high = i < this.session_high ? i : this.session_high;
+                this.session_low  = i > this.session_low  ? i : this.session_low;
 
                 // profile
 
@@ -575,7 +580,7 @@ class dom {
 
         for (var i = high_price; i <= low_price; i++) {
 
-            y = i * this.row_height + this.row_offset;
+            y = i * (this.row_height + this.row_offset);
 
             if (this.dirty_col[i]) {
 
@@ -595,7 +600,7 @@ class dom {
                     this.profile_cell_offset,
                     y,
                     profile_bar_width,
-                    this.cell_height
+                    this.row_height
                 );
 
                 this.ctx.fillStyle = this.default_cell_color;
@@ -604,7 +609,7 @@ class dom {
                     this.profile_cell_offset + profile_bar_width,
                     y,
                     this.profile_cell_width - profile_bar_width,
-                    this.cell_height
+                    this.row_height
                 );
 
                 this.ctx.fillStyle = this.profile_text_color;
@@ -612,7 +617,7 @@ class dom {
                 this.ctx.fillText(
                     itoa_arr[this.profile_col[i]],
                     this.profile_cell_offset + this.text_margin, 
-                    y + this.cell_height - this.text_margin
+                    y + this.row_height - this.text_margin
                 );
 
                 cells_drawn += 1;
