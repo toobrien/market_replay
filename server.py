@@ -98,8 +98,9 @@ if __name__ == "__main__":
 
         symbol_data[sym] = res
 
-    print(f"loaded all symbols:\t\t{time() - t0:0.2f}")
-    print("server ready")
+        print(f"{sym}\t\t{len(res['records'])}\t{time() - t1:0.2f}")
+
+    print(f"ready:\t\t\t{time() - t0:0.2f}")
 
     app.run(
         host = app_config["hostname"],
