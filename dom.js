@@ -75,6 +75,7 @@ class dom {
     ltq_price               = null;
     ltq_qty                 = null;
     ltq_prev_price          = null;
+    ltq_prev_update         = null;
 
     poc_qty                 = null;
 
@@ -524,13 +525,16 @@ class dom {
 
             return;
 
-        var rec             = this.records[this.it];
-        var price           = null;
-        var qty             = null;
-        var i               = null;
-        var side            = null;
-        var tas_processed   = 0;
-        var depth_processed = 0;
+        var rec                 = this.records[this.it];
+        var price               = null;
+        var qty                 = null;
+        var i                   = null;
+        var side                = null;
+
+        var tas_processed       = 0;
+        var depth_processed     = 0;
+
+        this.ltq_prev_update    = this.ltq_price;
 
         while (rec[dom.t_ts] < ts && this.it < this.records.length) {
 
@@ -955,8 +959,8 @@ class dom {
 
                 if (i  == this.ltq_price) {
 
-                    this.ctx.fillStyle =    this.ltq_price > this.ltq_prev_price ? this.ltq_cell_color_up :
-                                            this.ltq_price < this.ltq_prev_price ? this.ltq_cell_color_down :
+                    this.ctx.fillStyle =    this.ltq_price > this.ltq_prev_update ? this.ltq_cell_color_up :
+                                            this.ltq_price < this.ltq_prev_update ? this.ltq_cell_color_down :
                                             this.ltq_cell_color_unch;
 
                     this.ctx.fillRect(
