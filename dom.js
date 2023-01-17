@@ -34,6 +34,10 @@ class dom {
     static dc_del_bid   = 6;
     static dc_del_ask   = 7;
 
+    // side
+
+    static side_bid     = 0;
+    static side_ask     = 1;
 
     // symbol and state
 
@@ -113,6 +117,9 @@ class dom {
 
     ltq_cell_width          = null;
     ltq_cell_offset         = null;
+    ltq_cell_color_up       = null;
+    ltq_cell_color_unch     = null;
+    ltq_cell_color_down     = null;
 
     // style and color
 
@@ -130,8 +137,11 @@ class dom {
     
     bid_depth_cell_color    = null;
     bid_depth_qty_color     = null;
+    bid_print_text_color    = null;
+    
     ask_depth_cell_color    = null;
     ask_depth_qty_color     = null;
+    ask_print_text_color    = null;
 
     session_high_color      = null;
     session_low_color       = null;
@@ -181,11 +191,8 @@ class dom {
         this.price_precision        = dom_config["dimensions"]["price_precision"];
         this.price_char_width       = dom_config["dimensions"]["price_char_width"];
         this.price_cell_width       = dom_config["dimensions"]["price_cell_width"];
-        this.price_cell_color       = dom_config["style"]["price_cell_color"];
 
         this.depth_cell_width       = dom_config["dimensions"]["depth_cell_width"];
-        this.bid_depth_qty_color    = dom_config["colors"]["bid_depth_qty_color"];
-        this.ask_depth_qty_color    = dom_config["colors"]["ask_depth_qty_color"];
 
         this.print_cell_width       = dom_config["dimensions"]["print_cell_width"];
         
@@ -202,9 +209,9 @@ class dom {
         this.profile_cell_offset    = 0;
         this.price_cell_offset      = this.profile_cell_offset + this.profile_cell_width;
         this.bid_depth_cell_offset  = this.price_cell_offset + this.price_cell_width;
-        this.bid_print_cell_offset  = this.bid_depth_cell_offset + this.depth_cell_width;
-        this.ask_print_cell_offset  = this.bid_print_cell_offset + this.print_cell_width;
-        this.ask_depth_cell_offset  = this.ask_print_cell_offset + this.print_cell_width;
+        this.ask_print_cell_offset  = this.bid_depth_cell_offset + this.depth_cell_width;
+        this.bid_print_cell_offset  = this.ask_print_cell_offset + this.print_cell_width;
+        this.ask_depth_cell_offset  = this.bid_print_cell_offset + this.print_cell_width;
         this.ltq_cell_offset        = this.ask_depth_cell_offset + this.depth_cell_width;
 
     }
@@ -308,28 +315,36 @@ class dom {
         this.ltq_prev_qty       = null;
         this.poc_qty            = -1;
         this.max_lob_qty        = 1;
+        this.last_price         = null;
 
     }
 
 
     initialize_style_and_context(dom_config) {
 
-        this.default_line_width     = dom_config["style"]["default_line_width"];
-
         this.font                   = dom_config["style"]["font"];
-
+        this.default_line_width     = dom_config["style"]["default_line_width"];
+        this.default_text_color     = dom_config["colors"]["default_text_color"];
         this.grid_color             = dom_config["colors"]["grid_color"];
         this.center_line_color      = dom_config["colors"]["center_line_color"];
-        
         this.default_cell_color     = dom_config["colors"]["default_cell_color"];
+
+        this.price_text_color       = dom_config["colors"]["price_text_color"];
+        this.price_cell_color       = dom_config["style"]["price_cell_color"];
 
         this.profile_bar_color      = dom_config["colors"]["profile_bar_color"];
 
         this.bid_depth_cell_color   = dom_config["colors"]["bid_depth_cell_color"];
-        this.ask_depth_cell_color   = dom_config["colors"]["ask_depth_cell_color"];
+        this.bid_depth_qty_color    = dom_config["colors"]["bid_depth_qty_color"];
+        this.bid_print_text_color   = dom_config["colors"]["bid_print_text_color"];
 
-        this.default_text_color     = dom_config["colors"]["default_text_color"];
-        this.price_text_color       = dom_config["colors"]["price_text_color"];
+        this.ask_depth_cell_color   = dom_config["colors"]["ask_depth_cell_color"];
+        this.ask_depth_qty_color    = dom_config["colors"]["ask_depth_qty_color"];
+        this.ask_print_text_color   = dom_config["colors"]["ask_print_text_color"];
+
+        this.ltq_cell_color_up       = dom_config["colors"]["ltq_cell_color_up"];
+        this.ltq_cell_color_unch     = dom_config["colors"]["ltq_cell_color_unch"];
+        this.ltq_cell_color_down     = dom_config["colors"]["ltq_cell_dolor_down"];
         
         this.session_high_color     = dom_config["colors"]["session_high_color"];
         this.session_low_color      = dom_config["colors"]["session_low_color"];
@@ -459,9 +474,11 @@ class dom {
 
         // redraw everything ... bad solution, fix later
 
+        const saved_last_price = this.last_price;
+
         this.reset_to_ts(0);
 
-        const y         = this.last_price * (this.row_height + this.row_offset) - this.row_offset;
+        const y         = saved_last_price * (this.row_height + this.row_offset) - this.row_offset;
         const offset    = Math.round(0.5 * this.dom_height);
 
         this.container.scrollTo(0, y - offset);
@@ -491,7 +508,9 @@ class dom {
 
     clear_prints() {
 
-        // ...
+        this.bid_print_col.fill(0);
+        this.ask_print_col.fill(0);
+        this.dirty_col.fill(true);
 
     }
 
@@ -553,9 +572,15 @@ class dom {
                 
                 // price
 
-                // bid print
+                // bid/ask print
 
-                // ask print
+                if (side === dom.side_bid)
+        
+                    this.bid_print_col[i] += qty;
+
+                else
+
+                    this.ask_print_col[i] += qty;
 
                 // ltq
 
@@ -609,6 +634,10 @@ class dom {
 
                         }
 
+                        if (this.ask_print_col[i] > 0)
+
+                            this.ask_print_col[i] = 0;
+
                         break;
 
                     case dom.dc_add_ask:
@@ -629,6 +658,10 @@ class dom {
                             this.dirty_col.fill(this.best_ask, this.best_bid);
 
                         }
+
+                        if (this.bid_print_col[i] > 0)
+
+                            this.bid_print_col[i] = 0;
 
                         break;
 
@@ -749,9 +782,10 @@ class dom {
         // console.debug(`${this.symbol}\t${tas_processed}\,\t${depth_processed}`);
         // console.debug(`${this.symbol}\tupdate\t${processed}\t${performance.now() - t0}`)
 
-        const top_visible_price      = Math.floor(this.container.scrollTop / this.row_height);
+        const top_visible_price      = Math.floor(this.container.scrollTop / (this.row_height + this.row_offset));
         const bottom_visible_price   = Math.min(
-                                                    top_visible_price + Math.ceil(this.dom_height / this.row_height),
+                                                    top_visible_price + 
+                                                    Math.ceil(this.dom_height / (this.row_height + this.row_offset)),
                                                     this.num_prices - 1
                                                 );
 
@@ -807,6 +841,56 @@ class dom {
                     this.ctx.fillText(
                         itoa_arr[bid_depth_qty],
                         this.bid_depth_cell_offset + this.text_margin, 
+                        y + this.row_height - this.text_margin
+                    );
+
+                }
+
+                cells_drawn += 1;
+
+                // ask print
+
+                this.ctx.fillStyle = this.default_cell_color;
+
+                this.ctx.fillRect(
+                    this.ask_print_cell_offset,
+                    y,
+                    this.depth_cell_width,
+                    this.row_height
+                );
+
+                if (this.ask_print_col[i] > 0) {
+
+                    this.ctx.fillStyle = this.ask_print_text_color;
+
+                    this.ctx.fillText(
+                        itoa_arr[this.ask_print_col[i]],
+                        this.ask_print_cell_offset + this.print_cell_width / 3,
+                        y + this.row_height - this.text_margin
+                    );
+
+                }
+
+                cells_drawn += 1;
+
+                // bid print
+
+                this.ctx.fillStyle = this.default_cell_color;
+
+                this.ctx.fillRect(
+                    this.bid_print_cell_offset,
+                    y,
+                    this.depth_cell_width,
+                    this.row_height
+                );
+
+                if (this.bid_print_col[i] > 0) {
+
+                    this.ctx.fillStyle = this.bid_print_text_color;
+
+                    this.ctx.fillText(
+                        itoa_arr[this.bid_print_col[i]],
+                        this.bid_print_cell_offset + this.print_cell_width / 3,
                         y + this.row_height - this.text_margin
                     );
 
