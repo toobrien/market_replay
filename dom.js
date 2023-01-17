@@ -75,7 +75,6 @@ class dom {
     ltq_price               = null;
     ltq_qty                 = null;
     ltq_prev_price          = null;
-    ltq_prev_qty            = null;
 
     poc_qty                 = null;
 
@@ -117,9 +116,6 @@ class dom {
 
     ltq_cell_width          = null;
     ltq_cell_offset         = null;
-    ltq_cell_color_up       = null;
-    ltq_cell_color_unch     = null;
-    ltq_cell_color_down     = null;
 
     // style and color
 
@@ -142,6 +138,11 @@ class dom {
     ask_depth_cell_color    = null;
     ask_depth_qty_color     = null;
     ask_print_text_color    = null;
+    
+    ltq_cell_color_up       = null;
+    ltq_cell_color_unch     = null;
+    ltq_cell_color_down     = null;
+    ltq_text_color          = null;
 
     session_high_color      = null;
     session_low_color       = null;
@@ -312,7 +313,6 @@ class dom {
         this.ltq_price          = null;
         this.ltq_qty            = null;
         this.ltq_prev_price     = null;
-        this.ltq_prev_qty       = null;
         this.poc_qty            = -1;
         this.max_lob_qty        = 1;
         this.last_price         = null;
@@ -342,9 +342,10 @@ class dom {
         this.ask_depth_qty_color    = dom_config["colors"]["ask_depth_qty_color"];
         this.ask_print_text_color   = dom_config["colors"]["ask_print_text_color"];
 
-        this.ltq_cell_color_up       = dom_config["colors"]["ltq_cell_color_up"];
-        this.ltq_cell_color_unch     = dom_config["colors"]["ltq_cell_color_unch"];
-        this.ltq_cell_color_down     = dom_config["colors"]["ltq_cell_dolor_down"];
+        this.ltq_cell_color_up      = dom_config["colors"]["ltq_cell_color_up"];
+        this.ltq_cell_color_unch    = dom_config["colors"]["ltq_cell_color_unch"];
+        this.ltq_cell_color_down    = dom_config["colors"]["ltq_cell_dolor_down"];
+        this.ltq_text_color         = dom_config["colors"]["ltq_text_color"];
         
         this.session_high_color     = dom_config["colors"]["session_high_color"];
         this.session_low_color      = dom_config["colors"]["session_low_color"];
@@ -569,8 +570,6 @@ class dom {
                     this.poc_qty = this.profile_col[i];
 
                 }
-                
-                // price
 
                 // bid/ask print
 
@@ -583,6 +582,18 @@ class dom {
                     this.ask_print_col[i] += qty;
 
                 // ltq
+
+                if (i != this.ltq_price) {
+
+                    this.ltq_qty = 0;
+                    this.dirty_col[this.ltq_price] = true;
+
+                }
+
+                this.ltq_prev_price = this.ltq_price;
+                this.ltq_price  =  i;
+                this.ltq_qty    += qty;
+
 
             } else {
 
@@ -934,6 +945,44 @@ class dom {
                         itoa_arr[ask_depth_qty],
                         this.ask_depth_cell_offset + this.text_margin, 
                         y + this.row_height - this.text_margin
+                    );
+
+                }
+
+                cells_drawn += 1;
+
+                // ltq
+
+                if (i  == this.ltq_price) {
+
+                    this.ctx.fillStyle =    this.ltq_price > this.ltq_prev_price ? this.ltq_cell_color_up :
+                                            this.ltq_price < this.ltq_prev_price ? this.ltq_cell_color_down :
+                                            this.ltq_cell_color_unch;
+
+                    this.ctx.fillRect(
+                        this.ltq_cell_offset,
+                        y,
+                        this.ltq_cell_width,
+                        this.row_height
+                    )
+
+                    this.ctx.fillStyle = this.ltq_text_color;
+
+                    this.ctx.fillText(
+                        itoa_arr[this.ltq_qty],
+                        this.ltq_cell_offset + this.ltq_cell_width / 3,
+                        y + this.row_height - this.text_margin
+                    );
+                
+                } else {
+
+                    this.ctx.fillStyle = this.default_cell_color;
+
+                    this.ctx.fillRect(
+                        this.ltq_cell_offset,
+                        y,
+                        this.ltq_cell_width,
+                        this.row_height
                     );
 
                 }
