@@ -959,8 +959,8 @@ class dom {
 
                 if (i  == this.ltq_price) {
 
-                    this.ctx.fillStyle =    this.ltq_price > this.ltq_prev_update ? this.ltq_cell_color_up :
-                                            this.ltq_price < this.ltq_prev_update ? this.ltq_cell_color_down :
+                    this.ctx.fillStyle =    this.ltq_price < this.ltq_prev_update ? this.ltq_cell_color_up :
+                                            this.ltq_price > this.ltq_prev_update ? this.ltq_cell_color_down :
                                             this.ltq_cell_color_unch;
 
                     this.ctx.fillRect(
