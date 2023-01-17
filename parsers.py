@@ -103,7 +103,7 @@ def transform_tas(rs: List, price_adj: float):
 # https://www.sierrachart.com/index.php?page=doc/StudiesReference.php&ID=375#DownloadingOfHistoricalMarketDepthData
 
 # NOTE: sierra chart provides 30 days of historical market data: https://www.sierrachart.com/SupportBoard.php?PostID=279457#P279457
-
+# NOTE: depth records may be missing. to force download from a point in time, follow step 8: https://www.sierrachart.com/index.php?page=doc/StudiesReference.php&ID=375#DownloadingOfHistoricalMarketDepthData
 
 class depth_rec(IntEnum):
 

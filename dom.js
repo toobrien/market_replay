@@ -158,9 +158,10 @@ class dom {
         this.initialize_style_and_context(dom_config);
         this.initialize_canvas();
 
-        if (records)
-        
-            this.ts = records[0][dom.t_ts];
+        if (this.records)
+
+            this.ts = this.records[0][dom.t_ts];
+
 
     }
 
@@ -584,6 +585,8 @@ class dom {
 
                         this.max_lob_qty    = 1;
 
+                        break;
+
                         // i think this only happens at the start of the file,
                         // so no need to dirty anything?
 
@@ -743,7 +746,7 @@ class dom {
 
         }
 
-        console.log(`${this.symbol}\t${tas_processed}\,\t${depth_processed}`);
+        // console.debug(`${this.symbol}\t${tas_processed}\,\t${depth_processed}`);
         // console.debug(`${this.symbol}\tupdate\t${processed}\t${performance.now() - t0}`)
 
         const top_visible_price      = Math.floor(this.container.scrollTop / this.row_height);

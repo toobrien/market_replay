@@ -13,22 +13,8 @@ async function init() {
 
     const doms = [];
 
-    /*
-    // test without data
-
-    symbol_data = {
-        "CLG23_FUT_CME": {
-            "records":      [],
-            "tick_size":    0.01
-        "CLG23-CLH23.FUT_SPREAD.CME": {
-            "records":      [],
-            "tick_size":    0.01
-        }
-    }
-    */
-
     for (var sym in symbol_data)
-        
+
         doms.push(
             new dom(
                 sym,

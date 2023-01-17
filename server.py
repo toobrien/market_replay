@@ -98,8 +98,6 @@ if __name__ == "__main__":
 
         symbol_data[sym] = res
 
-        print(f"{sym:30s}\t{len(res['records'])}\t{time() - t1:0.2f}")
-
     print(f"loaded all symbols:\t\t{time() - t0:0.2f}")
     print("server ready")
 
