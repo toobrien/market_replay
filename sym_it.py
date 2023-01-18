@@ -131,7 +131,7 @@ class SymIt:
 
     def __getitem__(self, slice):
 
-        res = None
+        res = []
 
         if slice.start < (len(self.lob_recs)):
 
@@ -147,12 +147,12 @@ class SymIt:
 
             update = not (self.lob_recs or self.tas_recs)
 
-            self.set_ts(self.start, update)
+            self.set_ts(slice.start, update)
 
             for rec in self:
 
-                if  len(rec) == len(depth_rec) and rec[depth_rec.timestamp] < slice.end or \
-                    rec[tas_rec.timestamp] < slice.end:
+                if  len(rec) == len(depth_rec) and rec[depth_rec.timestamp] <= slice.stop or \
+                    rec[tas_rec.timestamp] <= slice.stop:
 
                     res.append(rec)
             
