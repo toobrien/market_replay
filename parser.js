@@ -32,7 +32,7 @@ async function parse_depth(symbol) {
 
     const   num_recs    = (view.byteLength - DEPTH_HEADER_BYTE_LEN) / DEPTH_RECORD_BYTE_LEN;
 
-    const   recs        = new Array(num_recs).fill(new Array(DEPTH_RECORD_LEN));
+    const   recs        = Array.from(Array(num_recs), () => new Array(DEPTH_RECORD_LEN));
     let     i           = 0;
     let     offset      = DEPTH_HEADER_BYTE_LEN;
 
@@ -40,11 +40,11 @@ async function parse_depth(symbol) {
 
         let rec = recs[i++];
 
-        rec[0]  = view.getBigUint64(offset, true);        // timestamp
-        rec[1]  = view.getUint8(offset + 8, true);        // command
-        rec[2]  = view.getUint8(offset + 9, true);        // flags
-        rec[3]  = view.getFloat32(offset + 12, true);     // price
-        rec[4]  = view.getUint32(offset + 16, true);      // qty
+        rec[0]  = Number(view.getBigUint64(offset, true));  // timestamp
+        rec[1]  = view.getUint8(offset + 8, true);          // command
+        rec[2]  = view.getUint8(offset + 9, true);          // flags
+        rec[3]  = view.getFloat32(offset + 12, true);       // price
+        rec[4]  = view.getUint32(offset + 16, true);        // qty
 
         // skip reserved u_int32
 
@@ -74,7 +74,7 @@ async function parse_trades(symbol) {
 
     const   num_recs    = (view.byteLength - TRADES_HEADER_BYTE_LEN) / TRADE_RECORD_BYTE_LEN;
 
-    const   recs        = new Array(num_recs).fill(new Array(TRADE_RECORD_LEN));
+    const   recs        = Array.from(Array(num_recs), () => new Array(TRADE_RECORD_LEN));
     let     i           = 0;
     let     offset      = TRADES_HEADER_BYTE_LEN;
     let     bid_vol     = 0;
@@ -84,9 +84,9 @@ async function parse_trades(symbol) {
 
         let rec = recs[i++];
 
-        rec[0]  = view.getBigUint64(offset, true);    // timestamp
-        rec[1]  = view.getFloat32(offset + 20, true); // price
-        rec[2]  = view.getUint32(offset + 28, true);  // qty
+        rec[0]  = Number(view.getBigUint64(offset, true));  // timestamp
+        rec[1]  = view.getFloat32(offset + 20, true);       // price
+        rec[2]  = view.getUint32(offset + 28, true);        // qty
 
         bid_vol = view.getUint32(offset + 32, true);
         ask_vol = view.getUint32(offset + 36, true);
@@ -109,8 +109,8 @@ function synchronize(depth_recs, trade_recs) {
     recs = new Array();
 
     let i           = 0;
-    let init_ts     = depth_recs[i][0];
-    let j           = trade_recs.findIndex( e => e[0] > init_ts);
+    let init_ts     = depth_recs[0][0];
+    let j           = trade_recs.findIndex(rec => rec[0] > init_ts);
     let depth_rec   = null;
     let trade_rec   = null;
     
