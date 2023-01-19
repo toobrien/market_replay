@@ -3,24 +3,26 @@
 class dom_manager {
 
 
-    static sc_to_unix_us = 2208988800000 * 1000;
+    // microseconds between 1899-12-30 and 1970-01-01 UTC
+    
+    static sc_to_unix_us    = 2209132800000000;
 
-    doms             = null;
-    update_ms        = null;
-    utc_offset       = null;
-    ts               = null;
-    multiplier       = null;
-    interval_us      = null;
-    date             = null;
-    loop             = null;
+    doms                    = null;
+    update_ms               = null;
+    utc_offset              = null;
+    ts                      = null;
+    multiplier              = null;
+    interval_us             = null;
+    date                    = null;
+    loop                    = null;
 
-    latest_date_div  = null;
+    latest_date_div         = null;
 
-    timestamp_input  = null;
-    timestamp_button = null;
+    timestamp_input         = null;
+    timestamp_button        = null;
 
-    speed_input      = null;
-    speed_button     = null;
+    speed_input             = null;
+    speed_button            = null;
 
 
     constructor(doms, update_ms, utc_offset) {

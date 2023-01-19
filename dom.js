@@ -16,11 +16,9 @@ class dom {
     static d_ts         = 0;
     static d_cmd        = 1;
     static d_flags      = 2;
-    static d_num_orders = 3;
-    static d_price      = 4;
-    static d_qty        = 5;
-    static d_reserved   = 6;
-    static d_len        = 7
+    static d_price      = 3;
+    static d_qty        = 4;
+    static d_len        = 5;
 
 
     // depth record command enum

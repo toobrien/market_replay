@@ -101,9 +101,9 @@ def transform_tas(rs: List, price_adj: float):
 # MARKET DEPTH
 # NOTE: sc must be configured to record market depth data:
 # https://www.sierrachart.com/index.php?page=doc/StudiesReference.php&ID=375#DownloadingOfHistoricalMarketDepthData
-
 # NOTE: sierra chart provides 30 days of historical market data: https://www.sierrachart.com/SupportBoard.php?PostID=279457#P279457
 # NOTE: depth records may be missing. to force download from a point in time, follow step 8: https://www.sierrachart.com/index.php?page=doc/StudiesReference.php&ID=375#DownloadingOfHistoricalMarketDepthData
+# NOTE: by default, SC only downloads 5 days of historical data. to download up to 30, use this setting: https://www.sierrachart.com/index.php?page=doc/SierraChartServerSettings.php#MaximumHistoricalMarketDepthDaysToDownload
 
 class depth_rec(IntEnum):
 
