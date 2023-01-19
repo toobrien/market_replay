@@ -1105,8 +1105,10 @@ class dom {
         this.it = 0;
 
         this.redraw_canvas();
-
         this.initialize_state();
+
+        this.dirty_col.fill(true);
+        this.dirty_profile_col.fill(true);
     
     }
 

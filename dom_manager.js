@@ -80,7 +80,7 @@ class dom_manager {
         
         this.date.setTime(ms);
         
-        this.date.setUTCHours(this.date.getUTCHours() + this.utc_offset);
+        this.date.setUTCHours(this.date.getUTCHours() - this.utc_offset);
         
         var ds = this.date.toISOString();
 
@@ -105,7 +105,7 @@ class dom_manager {
         this.date.setUTCFullYear(year);
         this.date.setUTCMonth(month - 1);
         this.date.setUTCDate(day);
-        this.date.setUTCHours(hours - this.utc_offset);
+        this.date.setUTCHours(hours + this.utc_offset);
         this.date.setUTCMinutes(minutes);
         this.date.setUTCSeconds(seconds);
         this.date.setUTCMilliseconds(milliseconds);
