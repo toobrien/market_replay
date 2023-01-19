@@ -489,6 +489,41 @@ class dom {
 
     center_dom() {
 
+        if (this.prev_center_price) {
+
+            // clear surrounding cells to eliminate line, then dirty to redraw on next cycle.
+            // just clearing the line doesn't work; the canvas doesn't draw precisely for some reason.
+
+            const prev_y = this.prev_center_price * (this.row_height + this.row_offset) - this.row_offset;
+
+            this.ctx.clearRect(
+                this.profile_cell_offset,
+                prev_y - (this.row_height + this.row_offset),
+                this.row_width,
+                this.row_height * 2
+            );
+
+            this.ctx.fillStyle = this.grid_color;
+
+            this.ctx.fillRect(
+                this.profile_cell_offset,
+                prev_y - (this.row_height + this.row_offset),
+                this.row_width,
+                this.row_height * 2
+            );
+
+            this.dirty_col[this.prev_center_price]          = true;
+            this.dirty_profile_col[this.prev_center_price]  = true;
+                
+            this.dirty_col[this.prev_center_price + 1]  = true;
+            this.dirty_col[this.prev_center_price - 1]  = true;
+
+            this.dirty_profile_col[this.prev_center_price + 1]  = true;
+            this.dirty_profile_col[this.prev_center_price - 1]  = true;    
+
+            
+        }
+
         const y         = this.last_price * (this.row_height + this.row_offset) - this.row_offset;
         const offset    = Math.round(0.5 * this.dom_height);
 
@@ -499,44 +534,6 @@ class dom {
         this.ctx.moveTo(0, y);
         this.ctx.lineTo(this.row_width, y);
         this.ctx.stroke();
-
-        if (this.prev_center_price) {
-
-            // clear surrounding cells to eliminate line, then dirty to redraw on next cycle.
-            // just clearing the line doesn't work; the canvas doesn't draw precisely for some reason.
-
-            const prev_y = this.prev_center_price * (this.row_height + this.row_offset) - this.row_offset;
-
-            this.ctx.clearRect(
-                this.profile_cell_offset,
-                y + this.row_height + this.row_offset,
-                this.row_width,
-                this.row_height * 2
-            );
-
-            this.ctx.fillStyle = this.grid_color;
-
-            this.ctx.fillRect(
-                this.profile_cell_offset,
-                y + this.row_heigh + this.row_offset,
-                this.row_width,
-                this.row_height * 2
-            );
-
-            this.dirty_col[this.prev_center_price]          = true;
-            this.dirty_profile_col[this.prev_center_price]  = true;
-
-            for (let i = 1; i < 5; i++) {
-                
-                this.dirty_col[this.prev_center_price + i]  = true;
-                this.dirty_col[this.prev_center_price - i]  = true;
-
-                this.dirty_profile_col[this.prev_center_price + i]  = true;
-                this.dirty_profile_col[this.prev_center_price - i]  = true;    
-
-            }
-            
-        }
 
         this.prev_center_price = this.last_price;
 
