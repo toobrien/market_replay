@@ -160,10 +160,6 @@ class dom {
         this.ts             = 0;
         this.tick_size      = tick_size;
         this.records        = records;
-        this.best_bid       = Number.MAX_VALUE;
-        this.best_ask       = Number.MIN_VALUE;
-        this.session_high   = Number.MIN_VALUE;
-        this.session_low    = Number.MAX_VALUE;
         this.max_depth      = dom_config["depth"]["max_depth"];
 
         this.initialize_tick_size_int();
@@ -326,12 +322,16 @@ class dom {
 
         }
         
-        this.ltq_price          = null;
-        this.ltq_qty            = null;
-        this.ltq_prev_price     = null;
-        this.poc_qty            = -1;
-        this.max_lob_qty        = 1;
-        this.last_price         = null;
+        this.best_bid       = Number.MAX_VALUE;
+        this.best_ask       = Number.MIN_VALUE;
+        this.session_high   = Number.MIN_VALUE;
+        this.session_low    = Number.MAX_VALUE;
+        this.ltq_price      = null;
+        this.ltq_qty        = null;
+        this.ltq_prev_price = null;
+        this.poc_qty        = -1;
+        this.max_lob_qty    = 1;
+        this.last_price     = null;
 
     }
 
@@ -379,7 +379,7 @@ class dom {
         this.ctx                        = this.canvas.getContext("2d");
         this.ctx.imageSmoothingEnabled  = false;
 
-        this.canvas_height  = this.num_prices * this.row_height;
+        this.canvas_height  = this.num_prices * (this.row_height + this.row_offset);
         this.canvas.height  = this.canvas_height;
         this.canvas.width   = this.row_width;
         this.container      = document.getElementById(`${this.symbol}_dom_container`);

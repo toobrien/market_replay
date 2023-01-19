@@ -7,7 +7,7 @@
         "ltq_cell_width":       30,
         "text_margin":          3,
         "row_height":           12,
-        "dom_height":           1000,
+        "dom_height":           1100,
         "scroll_bar_width":     10
     },
     "style": {
