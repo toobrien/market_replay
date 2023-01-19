@@ -823,6 +823,7 @@ class dom {
         // console.debug(`${this.symbol}\tupdate\t${processed}\t${performance.now() - t0}`)
 
         this.dirty_col.fill(
+                                true,
                                 Math.min(this.best_ask, prev_best_ask),
                                 Math.max(this.best_bid, prev_best_bid)
                             );
