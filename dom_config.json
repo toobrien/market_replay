@@ -1,8 +1,6 @@
 {
     "dimensions": {
-        "price_precision":      2,
-        "price_char_width":     6,
-        "price_cell_width":     30,
+        "price_cell_width":     40,
         "profile_cell_width":   50,
         "depth_cell_width":     30,
         "print_cell_width":     30,
@@ -21,6 +19,7 @@
         "center_line_color":    "#000000",
         "default_cell_color":   "#dddddd",
         "profile_bar_color":    "#004999",
+        "inside_price_color":   "#FFFFFF",
         "price_text_color":     "#000000",
         "bid_depth_cell_color": "#0C56BC",
         "bid_depth_qty_color":  "#00308F",

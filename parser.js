@@ -3,12 +3,11 @@ async function parse_symbol_records(symbol) {
 
     const t0 = performance.now();
 
-    const   depth_recs  = parse_depth(symbol);
-    const   trade_recs  = parse_trades(symbol);
+    const   depth_recs  = await parse_depth(symbol);
+    const   init_ts     = depth_recs[0][0]
+    const   trade_recs  = await parse_trades(symbol, init_ts);
 
-    let     results     = await Promise.all([ depth_recs, trade_recs ]);
-
-    let     seq         = synchronize(results[0], results[1]);
+    let     seq         = synchronize(depth_recs, trade_recs);
 
     console.log(`${symbol}\t${performance.now() - t0} ms total`);
 
@@ -65,16 +64,14 @@ const TRADES_HEADER_BYTE_LEN    = 56;
 const TRADE_RECORD_BYTE_LEN     = 40;
 const TRADE_RECORD_LEN          = 4;
 
-async function parse_trades(symbol) {
+async function parse_trades(symbol, init_ts) {
 
     let t0  = performance.now();
 
     let     buf         = await (await fetch(`http://${server}/symbol_trades/${symbol}`)).arrayBuffer();
     const   view        = new DataView(buf);
-
-    const   num_recs    = (view.byteLength - TRADES_HEADER_BYTE_LEN) / TRADE_RECORD_BYTE_LEN;
-
-    const   recs        = Array.from(Array(num_recs), () => new Array(TRADE_RECORD_LEN));
+    
+    const   recs        = new Array();
     let     i           = 0;
     let     offset      = TRADES_HEADER_BYTE_LEN;
     let     bid_vol     = 0;
@@ -82,9 +79,21 @@ async function parse_trades(symbol) {
 
     while (offset < view.byteLength) {
 
-        let rec = recs[i++];
+        let ts = Number(view.getBigUint64(offset, true));  // timestamp
 
-        rec[0]  = Number(view.getBigUint64(offset, true));  // timestamp
+        if (ts < init_ts) {
+
+            // trade occurred before first depth rec, skip
+
+            offset += TRADE_RECORD_BYTE_LEN;
+
+            continue;
+
+        }
+
+        let rec = new Array(4);
+
+        rec[0]  = ts;
         rec[1]  = view.getFloat32(offset + 20, true);       // price
         rec[2]  = view.getUint32(offset + 28, true);        // qty
 
@@ -93,7 +102,11 @@ async function parse_trades(symbol) {
 
         rec[3]  = bid_vol > 0 ? 0 : 1;          // side (0 = at bid, 1 = at ask)
 
+        recs.push(rec);
+
         offset += TRADE_RECORD_BYTE_LEN;
+
+        i++;
 
     }
 
@@ -109,8 +122,7 @@ function synchronize(depth_recs, trade_recs) {
     recs = new Array();
 
     let i           = 0;
-    let init_ts     = depth_recs[0][0];
-    let j           = trade_recs.findIndex(rec => rec[0] > init_ts);
+    let j           = 0;
     let depth_rec   = null;
     let trade_rec   = null;
     
@@ -136,7 +148,7 @@ function synchronize(depth_recs, trade_recs) {
 
     while (i < depth_recs.length)
 
-        recs.push(depth_recs[i++])
+        recs.push(depth_recs[i++]);
         
 
     return recs;

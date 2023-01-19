@@ -40,6 +40,10 @@ class dom {
     // symbol and state
 
     symbol                  = null;
+    
+    tick_size               = null;
+    tick_size_int           = null;
+    price_adjust            = null;
 
     it                      = null;
     ts                      = null;
@@ -56,7 +60,7 @@ class dom {
     max_lob_qty             = null;
     last_price              = null;
     
-    prev_center_line_y      = null;
+    prev_center_price       = null;
 
     max_depth               = null;
 
@@ -128,6 +132,8 @@ class dom {
     profile_bar_color       = null;
 
     default_cell_color      = null;
+
+    inside_price_color      = null;
     price_text_color        = null;
     
     bid_depth_cell_color    = null;
@@ -154,12 +160,13 @@ class dom {
         this.ts             = 0;
         this.tick_size      = tick_size;
         this.records        = records;
-        this.best_bid       = Number.MIN_VALUE;
-        this.best_ask       = Number.MAX_VALUE;
+        this.best_bid       = Number.MAX_VALUE;
+        this.best_ask       = Number.MIN_VALUE;
         this.session_high   = Number.MIN_VALUE;
         this.session_low    = Number.MAX_VALUE;
         this.max_depth      = dom_config["depth"]["max_depth"];
 
+        this.initialize_tick_size_int();
         this.initialize_dimensions(dom_config);
         this.initialize_offsets();
         this.initialize_price_range();
@@ -176,6 +183,15 @@ class dom {
     }
 
 
+    initialize_tick_size_int() {
+
+        this.price_precision    = this.tick_size.toString().split(".")[1].length;
+        this.price_adjust       = 10 ** -this.price_precision;
+        this.tick_size_int      = this.tick_size * 10 ** this.price_precision;
+
+    }
+
+
     initialize_dimensions(dom_config) {
 
         this.grid_adjustment        = dom_config["style"]["default_line_width"];
@@ -188,8 +204,6 @@ class dom {
 
         this.profile_cell_width     = dom_config["dimensions"]["profile_cell_width"];
 
-        this.price_precision        = dom_config["dimensions"]["price_precision"];
-        this.price_char_width       = dom_config["dimensions"]["price_char_width"];
         this.price_cell_width       = dom_config["dimensions"]["price_cell_width"];
 
         this.depth_cell_width       = dom_config["dimensions"]["depth_cell_width"];
@@ -241,7 +255,7 @@ class dom {
 
             if (rec.length == dom.t_len) {
 
-                this.last_price = rec[dom.t_price];
+                this.last_price = rec[dom.t_price] / this.tick_size_int;
                 
                 break;
 
@@ -249,18 +263,21 @@ class dom {
 
         }
 
-        this.max_price = this.max_price + this.max_depth;
-        this.min_price = this.min_price - this.max_depth;
-        this.num_prices = this.max_price - this.min_price + 1;
+        this.max_price = this.max_price + (this.max_depth * this.tick_size_int);
+        this.min_price = this.min_price - (this.max_depth * this.tick_size_int);
+        this.num_prices = (this.max_price - this.min_price) / this.tick_size_int + 1;
 
         // fill price text array with all prices here to avoid dynamic allocations
 
-        this.price_text_arr = new Array(this.num_prices);
-        var price           = 0.0;
+        this.price_char_width   = this.max_price.toString().length; 
+        
+        this.price_text_arr     = new Array(this.num_prices);
+
+        var price               = 0.0;
 
         for (let i = 0; i < this.num_prices; i++) {
 
-            price = (this.max_price - i) * this.tick_size;
+            price = (this.max_price - i * this.tick_size_int) * this.price_adjust;
             this.price_text_arr[i] = String(price.toFixed(this.price_precision)).padStart(this.price_char_width);
 
         }
@@ -329,7 +346,7 @@ class dom {
         this.default_cell_color     = dom_config["colors"]["default_cell_color"];
 
         this.price_text_color       = dom_config["colors"]["price_text_color"];
-        this.price_cell_color       = dom_config["style"]["price_cell_color"];
+        this.inside_price_color     = dom_config["colors"]["inside_price_color"]
 
         this.profile_bar_color      = dom_config["colors"]["profile_bar_color"];
 
@@ -472,13 +489,7 @@ class dom {
 
     center_dom() {
 
-        // redraw everything ... bad solution, fix later
-
-        const saved_last_price = this.last_price;
-
-        this.reset_to_ts(0);
-
-        const y         = saved_last_price * (this.row_height + this.row_offset) - this.row_offset;
+        const y         = this.last_price * (this.row_height + this.row_offset) - this.row_offset;
         const offset    = Math.round(0.5 * this.dom_height);
 
         this.container.scrollTo(0, y - offset);
@@ -489,19 +500,45 @@ class dom {
         this.ctx.lineTo(this.row_width, y);
         this.ctx.stroke();
 
-        /*
-        if (this.prev_center_line_y) {
+        if (this.prev_center_price) {
 
-            this.ctx.beginPath();
+            // clear surrounding cells to eliminate line, then dirty to redraw on next cycle.
+            // just clearing the line doesn't work; the canvas doesn't draw precisely for some reason.
+
+            const prev_y = this.prev_center_price * (this.row_height + this.row_offset) - this.row_offset;
+
+            this.ctx.clearRect(
+                this.profile_cell_offset,
+                y + this.row_height + this.row_offset,
+                this.row_width,
+                this.row_height * 2
+            );
+
             this.ctx.fillStyle = this.grid_color;
-            this.ctx.moveTo(0, this.prev_center_line_y);
-            this.ctx.lineTo(this.row_width, this.prev_center_line_y);
-            this.ctx.stroke();
 
+            this.ctx.fillRect(
+                this.profile_cell_offset,
+                y + this.row_heigh + this.row_offset,
+                this.row_width,
+                this.row_height * 2
+            );
+
+            this.dirty_col[this.prev_center_price]          = true;
+            this.dirty_profile_col[this.prev_center_price]  = true;
+
+            for (let i = 1; i < 5; i++) {
+                
+                this.dirty_col[this.prev_center_price + i]  = true;
+                this.dirty_col[this.prev_center_price - i]  = true;
+
+                this.dirty_profile_col[this.prev_center_price + i]  = true;
+                this.dirty_profile_col[this.prev_center_price - i]  = true;    
+
+            }
+            
         }
 
-        this.prev_center_line_y = y;
-        */
+        this.prev_center_price = this.last_price;
 
     }
 
@@ -528,6 +565,8 @@ class dom {
         var qty                 = null;
         var i                   = null;
         var side                = null;
+        let prev_best_ask       = this.best_ask;
+        let prev_best_bid       = this.best_bid;          
 
         var tas_processed       = 0;
         var depth_processed     = 0;
@@ -549,7 +588,7 @@ class dom {
                 qty   = rec[dom.t_qty];
                 side  = rec[dom.t_side];
 
-                i = this.max_price - price;
+                i = (this.max_price - price) / this.tick_size_int;
 
                 this.last_price = i;
 
@@ -605,7 +644,7 @@ class dom {
 
                 price = rec[dom.d_price];
                 qty   = rec[dom.d_qty];
-                i     = this.max_price - price;
+                i     = (this.max_price - price) / this.tick_size_int;
 
                 switch (rec[dom.d_cmd]) {
 
@@ -617,9 +656,6 @@ class dom {
 
                         this.bid_depth_col.fill(0);
                         this.ask_depth_col.fill(0);
-
-                        this.best_bid       = Number.MIN_SAFE_INTEGER;
-                        this.best_ask       = Number.MAX_SAFE_INTEGER;
 
                         this.max_lob_qty    = 1;
 
@@ -640,16 +676,13 @@ class dom {
 
                         }
 
-                        if (i < this.best_bid) {
-
-                            this.best_bid = i;
-                            this.dirty_col.fill(this.best_ask, this.best_bid);
-
-                        }
-
                         if (this.ask_print_col[i] > 0)
 
                             this.ask_print_col[i] = 0;
+
+                        if (i < this.best_bid)
+
+                            this.best_bid = i;
 
                         break;
 
@@ -664,17 +697,14 @@ class dom {
                             this.dirty_col.fill(true);
 
                         }
-                        
-                        if (i > this.best_ask) {
-
-                            this.best_ask = i;
-                            this.dirty_col.fill(this.best_ask, this.best_bid);
-
-                        }
 
                         if (this.bid_print_col[i] > 0)
 
                             this.bid_print_col[i] = 0;
+
+                        if (i > this.best_ask)
+
+                            this.best_ask = i;
 
                         break;
 
@@ -737,16 +767,16 @@ class dom {
 
                         if (i == this.best_bid) {
 
-                            for (var j = i; j < this.num_prices; j++) {
+                            for (let j = i; j < this.bid_depth_col.length; ++j) {
 
-                                if (this.bid_depth_col[j] != 0) {
-
-                                    this.best_bid = j;
+                                if (this.bid_depth_col[j]) {
                                     
+                                    this.best_bid = j;
+
                                     break;
 
                                 }
-
+                            
                             }
 
                         }
@@ -766,16 +796,16 @@ class dom {
 
                         if (i == this.best_ask) {
 
-                            for (var j = i; j >= 0; j--) {
+                            for (let j = i; j >= 0; --j) {
 
-                                if (this.ask_depth_col[j] != 0) {
-
-                                    this.best_ask = j;
+                                if (this.ask_depth_col[j]) {
                                     
+                                    this.best_ask = j;
+
                                     break;
 
                                 }
-
+                            
                             }
 
                         }
@@ -794,6 +824,13 @@ class dom {
 
         // console.debug(`${this.symbol}\t${tas_processed}\,\t${depth_processed}`);
         // console.debug(`${this.symbol}\tupdate\t${processed}\t${performance.now() - t0}`)
+
+        this.dirty_col.fill(
+                                Math.min(this.best_ask, prev_best_ask),
+                                Math.max(this.best_bid, prev_best_bid)
+                            );
+
+        // set visible range in which cells might be drawn
 
         const top_visible_price      = Math.floor(this.container.scrollTop / (this.row_height + this.row_offset));
         const bottom_visible_price   = Math.min(
@@ -818,6 +855,29 @@ class dom {
             y = i * (this.row_height + this.row_offset);
 
             if (this.dirty_col[i]) {
+
+                // price
+
+                this.ctx.fillStyle =    i   >= this.best_ask && i <= this.best_bid ? 
+                                            this.inside_price_color : 
+                                            this.default_cell_color;
+
+                this.ctx.fillRect(
+                    this.price_cell_offset,
+                    y,
+                    this.price_cell_width,
+                    this.row_height
+                );
+
+                this.ctx.fillStyle = this.price_text_color;
+
+                this.ctx.fillText(
+                    this.price_text_arr[i],
+                    this.price_cell_offset + this.text_margin,
+                    y + this.row_height - this.text_margin
+                );
+
+                cells_drawn += 1;
 
                 // bid depth background
 
