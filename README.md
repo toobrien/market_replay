@@ -64,4 +64,11 @@ As you might have guessed, you need to have charts open for symbols in order for
 
 # To do
 
-I still need to do a lot of testing and work out bugs. I need to support bond prices. I will probably update the controls with more features. Let me know if you find a bug or have a request. Thanks!
+I still need to do a lot of testing and work out bugs. Some plans:
+
+- Update the loading screen to be more informative
+- Support bond prices. 
+- Probably add more controls.
+- Look for ways to decrease the loading time.
+
+Let me know if you find a bug or have a request. Thanks!
