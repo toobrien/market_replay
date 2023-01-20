@@ -66,7 +66,7 @@ As you might have guessed, you need to have charts open for symbols in order for
 
 I still need to do a lot of testing and work out bugs. Some plans:
 
-- Update the loading screen to be more informative
+- Update the loading screen to be more informative.
 - Support bond prices. 
 - Probably add more controls.
 - Look for ways to decrease the loading time.
