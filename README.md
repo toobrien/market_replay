@@ -62,4 +62,6 @@ Sometimes market depth data just doesn't want to download. But if you follow the
 
 As you might have guessed, you need to have charts open for symbols in order for SC to download intraday and market depth data. I will update this guide later if I find an efficient way to ensure that depth and intraday data is kept up-to-date and clean for a large number of symbols.
 
-If you have any questions in the meantime, please let me know!
+# To do
+
+I still need to do a lot of testing and work out bugs. I need to support bond prices. I will probably update the controls with more features. Let me know if you find a bug or have a request. Thanks!
