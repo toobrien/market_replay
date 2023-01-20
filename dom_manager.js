@@ -2,39 +2,42 @@
 
 class dom_manager {
 
-
-    // microseconds between 1899-12-30 and 1970-01-01 UTC
+    // microseconds between 1899-12-30 00:00:00 UTC and 1971-01-01 00:00:00 UTC
     
-    static sc_to_unix_us    = 2209132800000000;
+    sc_to_unix_us       = null;
+    utc_offset_us       = null;
 
-    doms                    = null;
-    update_ms               = null;
-    utc_offset              = null;
-    ts                      = null;
-    multiplier              = null;
-    interval_us             = null;
-    date                    = null;
-    loop                    = null;
+    doms                = null;
+    update_ms           = null;
+    ts                  = null;
+    multiplier          = null;
+    interval_us         = null;
+    date                = null;
+    loop                = null;
 
-    latest_date_div         = null;
+    latest_date_div     = null;
 
-    timestamp_input         = null;
-    timestamp_button        = null;
+    timestamp_input     = null;
+    timestamp_button    = null;
 
-    speed_input             = null;
-    speed_button            = null;
+    speed_input         = null;
+    speed_button        = null;
 
 
     constructor(doms, update_ms, utc_offset) {
 
-        this.doms           = doms;
-        this.update_ms      = update_ms;
-        this.utc_offset     = parseInt(utc_offset);
-        this.ts             = Math.min(...(this.doms.map(d => { return d.get_ts(); })));
-        this.multiplier     = 1.0;
-        this.interval_us    = this.multiplier * update_ms * 1000;
-        this.date           = new Date();
-        this.loop           = null;
+        this.doms               = doms;
+        this.update_ms          = update_ms;
+
+        this.date               = new Date();
+        
+        this.sc_to_unix_us      = 2209132800000000;
+        this.utc_offset_us      = parseInt(utc_offset) * 3.6e9;
+
+        this.ts                 = Math.min(...(this.doms.map(d => { return d.get_ts(); })));
+        this.multiplier         = 1.0;
+        this.interval_us        = this.multiplier * update_ms * 1000;
+        this.loop               = null;
         
         this.play_button                    = document.getElementById("play_button");
         this.play_button.innerHTML          = "play";
@@ -73,23 +76,34 @@ class dom_manager {
     }
 
 
+    // ts is in local time
+    // ds is in user-selected UTC offset
+
     ts_to_date_string(ts) {
 
-        const   us    = (ts % 1000).toString().padStart(3, "0");
-        const   ms    = (ts - dom_manager.sc_to_unix_us) / 1000;
+        const us = (ts % 1000).toString().padStart(3, "0");
+        const ms = (ts - this.sc_to_unix_us + this.utc_offset_us) / 1000;
         
         this.date.setTime(ms);
-        
-        this.date.setUTCHours(this.date.getUTCHours() - this.utc_offset);
-        
-        var ds = this.date.toISOString();
 
-        ds = ds.slice(0,-1) + us + "Z"
+        const year      = this.date.getFullYear();
+        const month     = (this.date.getMonth() + 1).toString().padStart(2, '0');
+        const day       = this.date.getDate().toString().padStart(2, '0');
+
+        const hour          = this.date.getHours().toString().padStart(2, '0');
+        const minute        = this.date.getMinutes().toString().padStart(2, '0');
+        const second        = this.date.getSeconds().toString().padStart(2, '0');
+        const millisecond   = this.date.getMilliseconds().toString().padStart(3, '0')
+
+        var ds = `${year}-${month}-${day} ${hour}:${minute}:${second}.${millisecond}${us}`;
 
         return ds;
     
     }
 
+
+    // ds is in user-selected UTC offset
+    // ts is in local time
 
     date_string_to_ts(ds) {
 
@@ -102,17 +116,15 @@ class dom_manager {
         const   milliseconds    = atoi(ds, 20, 23);
         const   us              = atoi(ds, 23, 26);
         
-        this.date.setUTCFullYear(year);
-        this.date.setUTCMonth(month - 1);
-        this.date.setUTCDate(day);
-        this.date.setUTCHours(hours + this.utc_offset);
-        this.date.setUTCMinutes(minutes);
-        this.date.setUTCSeconds(seconds);
-        this.date.setUTCMilliseconds(milliseconds);
+        this.date.setFullYear(year);
+        this.date.setMonth(month - 1);
+        this.date.setDate(day);
+        this.date.setHours(hours);
+        this.date.setMinutes(minutes);
+        this.date.setSeconds(seconds);
+        this.date.setMilliseconds(milliseconds);
 
-        var ts = this.date.getTime() * 1000;
-        
-        ts = ts + dom_manager.sc_to_unix_us + us;
+        var ts = this.date.getTime() * 1000 + us + this.sc_to_unix_us - this.utc_offset_us;
 
         return ts;
         
