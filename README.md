@@ -56,7 +56,7 @@ Note that while the tick data is quite reliable, the market depth data sometimes
 
 1. Make sure that Sierra Chart is configured to download the maximum 30 days of stored depth data by following these instructions: https://www.sierrachart.com/index.php?page=doc/SierraChartServerSettings.php#MaximumHistoricalMarketDepthDaysToDownload
 
-2. Right-click on an intraday chart for the symbol, from a point prior to the missing file, and initiate a depth re-download: click `Download Depth Data from Realtime`. (See step 8 on the first depth data link in this section, above, for more info).
+2. Right-click on an intraday chart for the symbol, from a point prior to the missing file, and initiate a depth re-download: click `Download Depth Data from Date-time`. (See step 8 on the first depth data link in this section, above, for more info).
 
 Sometimes market depth data just doesn't want to download. But if you follow these steps, you should be able to get good files most of the time.
 
