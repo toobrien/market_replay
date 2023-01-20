@@ -9,7 +9,7 @@ async function parse_symbol_records(symbol) {
 
     let     seq         = synchronize(depth_recs, trade_recs);
 
-    console.log(`${symbol}\t${performance.now() - t0} ms total`);
+    load_log(`${symbol}&ensp;${performance.now() - t0} ms total<br>`);
 
     return seq;
 
@@ -51,7 +51,7 @@ async function parse_depth(symbol) {
 
     }
 
-    console.log(`${symbol}\tdepth\t${i} recs\t${performance.now() - t0} ms`);
+    load_log(`${symbol}&ensp;depth&ensp;${i} recs&ensp;${performance.now() - t0} ms<br>`);
 
     return recs;
 
@@ -110,7 +110,7 @@ async function parse_trades(symbol, init_ts) {
 
     }
 
-    console.log(`${symbol}\ttrades\t${i} recs\t${performance.now() - t0} ms`);
+    load_log(`${symbol}&ensp;trades&ensp;${i} recs&ensp;${performance.now() - t0} ms<br>`);
 
     return recs;
 

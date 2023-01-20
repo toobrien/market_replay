@@ -3,6 +3,13 @@
 var dm = null;
 
 
+function load_log(msg) {
+
+    document.getElementById("loading_screen").innerHTML += msg;
+
+}
+
+
 async function init() {
 
     // get config
@@ -40,7 +47,7 @@ async function init() {
 
         symbol_data[sym]["records"] = resolved[symbol_data[sym]["records"]];
 
-    console.log(`all parsed:\t${performance.now() - t0} ms`);
+    load_log(`<br>all parsed:&ensp;${performance.now() - t0} ms<br><br>`);
 
     // initialize doms
 
@@ -82,8 +89,15 @@ async function init() {
 
     dm = new dom_manager(doms, update_ms, utc_offset);
 
-    document.getElementById("loading_screen").style.display = "none";
-    document.getElementById("main_screen").style.display    = "inline";
+    setTimeout(
+        () => {
+
+            document.getElementById("loading_screen").style.display = "none";
+            document.getElementById("main_screen").style.display    = "inline";
+
+        },
+        1000
+    );
 
 }
 
