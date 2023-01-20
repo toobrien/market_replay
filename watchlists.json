@@ -9,5 +9,16 @@
         "CLN23-CLQ23.FUT_SPREAD.CME",
         "CLQ23-CLU23.FUT_SPREAD.CME",
         "CLU23-CLV23.FUT_SPREAD.CME"
+    ],
+    "energies": [
+        "CLG23_FUT_CME",
+        "NGG23_FUT_CME",
+        "HOG23_FUT_CME",
+        "RBG23_FUT_CME"
+    ],
+    "equities": [
+        "ESG23_FUT_CME",
+        "NQG23_FUT_CME",
+        "RTYG23_FUT_CME"    
     ]
 }

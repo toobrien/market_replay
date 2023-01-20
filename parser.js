@@ -5,7 +5,8 @@ async function parse_symbol_records(symbol) {
 
     const   depth_recs  = await parse_depth(symbol);
     const   init_ts     = depth_recs[0][0]
-    const   trade_recs  = await parse_trades(symbol, init_ts);
+    const   end_ts      = depth_recs[depth_recs.length - 1][0];
+    const   trade_recs  = await parse_trades(symbol, init_ts, end_ts);
 
     let     seq         = synchronize(depth_recs, trade_recs);
 
@@ -51,7 +52,7 @@ async function parse_depth(symbol) {
 
     }
 
-    load_log(`${symbol}&ensp;depth&ensp;${i} recs&ensp;${performance.now() - t0} ms<br>`);
+    load_log(`${symbol}&ensp;depth&ensp;${i} recs&ensp;${performance.now() - t0} ms&ensp;${++loaded} / ${to_load}<br>`);
 
     return recs;
 
@@ -64,7 +65,7 @@ const TRADES_HEADER_BYTE_LEN    = 56;
 const TRADE_RECORD_BYTE_LEN     = 40;
 const TRADE_RECORD_LEN          = 4;
 
-async function parse_trades(symbol, init_ts) {
+async function parse_trades(symbol, init_ts, end_ts) {
 
     let t0  = performance.now();
 
@@ -76,6 +77,8 @@ async function parse_trades(symbol, init_ts) {
     let     offset      = TRADES_HEADER_BYTE_LEN;
     let     bid_vol     = 0;
     let     ask_vol     = 0;
+    let     prev_ts     = init_ts;
+    let     warning     = false;
 
     while (offset < view.byteLength) {
 
@@ -90,6 +93,14 @@ async function parse_trades(symbol, init_ts) {
             continue;
 
         }
+
+        if (ts > end_ts)
+
+            break;
+
+        if (ts < prev_ts)
+
+            warning = true;
 
         let rec = new Array(4);
 
@@ -110,7 +121,11 @@ async function parse_trades(symbol, init_ts) {
 
     }
 
-    load_log(`${symbol}&ensp;trades&ensp;${i} recs&ensp;${performance.now() - t0} ms<br>`);
+    if (warning)
+
+        load_log(`<font color = "#FF0000">${symbol}&ensp;warning: out-of-sequence records detected. consider re-downloading depth file!</font><br>`);    
+
+    load_log(`${symbol}&ensp;trades&ensp;${i} recs&ensp;${performance.now() - t0} ms&ensp;${++loaded} / ${to_load}<br>`);
 
     return recs;
 

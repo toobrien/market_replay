@@ -1,6 +1,8 @@
 
 
-var dm = null;
+var dm      = null;
+var loaded  = 0;
+var to_load = null;
 
 
 function load_log(msg) {
@@ -24,6 +26,8 @@ async function init() {
 
     const symbol_data   = {};
     const promises      = [];
+
+    to_load = Object.keys(symbols).length * 2;
 
     const t0 = performance.now();
 
