@@ -2,8 +2,9 @@
 
 class dom_manager {
 
-    // microseconds between 1899-12-30 00:00:00 UTC and 1971-01-01 00:00:00 UTC
-    
+    // sc_to_unix_us = microseconds between 1899-12-30 00:00:00 UTC and 1971-01-01 00:00:00 UTC
+    // utc_offset_us is the user-selected offset from app_config
+
     sc_to_unix_us       = null;
     utc_offset_us       = null;
 
@@ -31,7 +32,7 @@ class dom_manager {
 
         this.date               = new Date();
         
-        this.sc_to_unix_us      = 2209132800000000;
+        this.sc_to_unix_us      = 2.2091328e15;
         this.utc_offset_us      = parseInt(utc_offset) * 3.6e9;
 
         this.ts                 = Math.min(...(this.doms.map(d => { return d.get_ts(); })));
@@ -86,9 +87,9 @@ class dom_manager {
         
         this.date.setTime(ms);
 
-        const year      = this.date.getFullYear();
-        const month     = (this.date.getMonth() + 1).toString().padStart(2, '0');
-        const day       = this.date.getDate().toString().padStart(2, '0');
+        const year          = this.date.getFullYear();
+        const month         = (this.date.getMonth() + 1).toString().padStart(2, '0');
+        const day           = this.date.getDate().toString().padStart(2, '0');
 
         const hour          = this.date.getHours().toString().padStart(2, '0');
         const minute        = this.date.getMinutes().toString().padStart(2, '0');
