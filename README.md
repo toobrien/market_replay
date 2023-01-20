@@ -22,7 +22,7 @@ The interface is straightforward. Once loading has finished, click `play` to beg
 
 A timestamp updates in real time, indicating the latest record read. To reset the timestamp to an earlier time, you can copy and paste (pause first) or just type one in. Then click `set timestamp` and the replay will restart from that point. You may want to pause first.
 
-You can scroll the DOMs up and down using the mouse wheel. You can recenter the dom with a keystroke, `q` by default. You can clear the recent prints with another key, `w` by default. These keys can be changed in `app_config.json`.
+You can scroll the DOMs up and down using the mouse wheel. You can re-center the dom with a keystroke, `q` by default. You can clear the recent prints with another key, `w` by default. These keys can be changed in `app_config.json`.
 
 # App Configuration
 
