@@ -8,6 +8,10 @@ E.g.
 
 `python server.py CLG23_FUT_CME CLH23_FUT_CME CLJ23_FUT_CME 2023-01-11`
 
+Or
+
+`python server.py watchlist energies 2023-01-11`
+
 You can also configure watchlists for commonly used symbols.
 
 After the server starts, visit it in your browser. By default:
