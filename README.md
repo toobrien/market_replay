@@ -60,7 +60,9 @@ Next, for any symbol that you wish to download depth data for, go to `Global Set
 
 # Managing Depth data
 
-While the tick data is quite reliable, the market depth data sometimes gets misordered or missing records and needs to be redownloaded. If you see weird behavior on the DOM, such as bids and asks not updating, it might be a bug; but more likely the file is corrupt. To re-download data there are two important steps:
+While the tick data is quite reliable, the market depth data sometimes gets misordered or missing records and needs to be redownloaded. If you see weird behavior on the DOM, such as bids and asks not updating, it might be a bug; but more likely the file is corrupt. When you load a symbol, the app should at least alert you if it encounters any misordered timestamps in a file, which is probably a sign you need to re-download the file.
+
+To re-download data there are two important steps:
 
 1. Make sure that Sierra Chart is configured to download the maximum 30 days of stored depth data by following these instructions: https://www.sierrachart.com/index.php?page=doc/SierraChartServerSettings.php#MaximumHistoricalMarketDepthDaysToDownload
 
