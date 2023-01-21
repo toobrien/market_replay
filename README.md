@@ -56,7 +56,7 @@ To record depth data, follow instructions 1-6:
 
 https://www.sierrachart.com/index.php?page=doc/StudiesReference.php&ID=375#DownloadingOfHistoricalMarketDepthData
 
-Next, for any symbol that you wish to download depth data for, go to `Global Settings >> Symbol Settings` and select the symbol.  (calendar spreads are a separate symbol from outrights, usually located right below in the symbol list). Set `Record Market Depth Data` to `yes`. I believe can also set `Number of Depth Levels to Support` to some number other than 0 (which means all) to a small number to keep the file size smaller and speed up loading.
+Next, for any symbol that you wish to download depth data for, go to `Global Settings >> Symbol Settings` and select the symbol.  (calendar spreads are a separate symbol from outrights, usually located right below in the symbol list). Set `Record Market Depth Data` to `yes`. I believe you can also set `Number of Depth Levels to Support` to some number other than 0 (which means all) to a small number to keep the file size smaller and speed up loading.
 
 # Managing Depth data
 
