@@ -72,7 +72,7 @@ Sometimes market depth data just doesn't want to download. But if you follow the
 
 Additionally, you need to have charts open for symbols in order for SC to download intraday and market depth data. I will update this guide later if I find an efficient way to ensure that depth and intraday data is kept up-to-date and clean for a large number of symbols.
 
-Because .depth files can be quite large (~200 MB/day for ES, for example), you may want to clean up the `MarketDepthData` folder in your Sierra Chart install. Since Sierra has no built in way to do this (as far as I know), I have included a script `clear_depth_files.sh` to take care of this for you. The first and only argument a date. All depth files recorded prior to that date will be deleted. For example, to delete files up to January 15th, run:
+Because .depth files can be quite large (~200 MB/day for ES, for example), you may want to clean up the `MarketDepthData` folder in your Sierra Chart install. Since Sierra has no built in way to do this (as far as I know), I have included a script `clear_depth_files.sh` to take care of this for you. The first and only argument is a date. All depth files recorded prior to that date will be deleted. For example, to delete files up to January 15th, run:
 
 `./clear_depth_files.sh 2023-01-15`
 
