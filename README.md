@@ -52,11 +52,15 @@ For the app to work properly, Sierra Chart needs to record both tick and depth d
 
 https://www.sierrachart.com/index.php?page=doc/TickbyTickDataConfiguration.php
 
-To record depth data, follow these instructions:
+To record depth data, follow instructions 1-6:
 
 https://www.sierrachart.com/index.php?page=doc/StudiesReference.php&ID=375#DownloadingOfHistoricalMarketDepthData
 
-Note that while the tick data is quite reliable, the market depth data sometimes gets misordered or missing records and needs to be redownloaded. If you see weird behavior on the DOM, such as bids and asks not updating, it might be a bug; but more likely the file is corrupt. To re-download data there are two important steps:
+Next, for any symbol that you wish to download depth data for, go to `Global Settings >> Symbol Settings` and select the symbol.  (calendar spreads are a separate symbol from outrights, usually located right below in the symbol list). Set `Record Market Depth Data` to `yes`. I believe can also set `Number of Depth Levels to Support` to some number other than 0 (which means all) to a small number to keep the file size smaller and speed up loading.
+
+# Managing Depth data
+
+While the tick data is quite reliable, the market depth data sometimes gets misordered or missing records and needs to be redownloaded. If you see weird behavior on the DOM, such as bids and asks not updating, it might be a bug; but more likely the file is corrupt. To re-download data there are two important steps:
 
 1. Make sure that Sierra Chart is configured to download the maximum 30 days of stored depth data by following these instructions: https://www.sierrachart.com/index.php?page=doc/SierraChartServerSettings.php#MaximumHistoricalMarketDepthDaysToDownload
 
@@ -65,6 +69,12 @@ Note that while the tick data is quite reliable, the market depth data sometimes
 Sometimes market depth data just doesn't want to download. But if you follow these steps, you should be able to get good files most of the time.
 
 As you might have guessed, you need to have charts open for symbols in order for SC to download intraday and market depth data. I will update this guide later if I find an efficient way to ensure that depth and intraday data is kept up-to-date and clean for a large number of symbols.
+
+Because .depth files can be quite large (~200 MB/day for ES, for example), you may want to clean up the `MarketDepthData` folder in your Sierra Chart install. Since Sierra has no built in way to do this (as far as I know), I have included a script `clear_depth_files.sh` to take care of this for you. The first and only argument a date. All depth files recorded prior to that date will be deleted. For example, to delete files up to January 15th, run:
+
+`./clear_depth_files.sh 2023-01-15`
+
+Note that you need to edit the first line of this script to ensure the `MarketDepthData` path matches your installation.
 
 # To do
 
