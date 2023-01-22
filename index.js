@@ -57,7 +57,7 @@ async function init() {
 
     const doms = [];
 
-    for (var sym in symbol_data)
+    for (var sym in symbol_data) {
 
         doms.push(
             new dom(
@@ -67,6 +67,8 @@ async function init() {
                 dom_config
             )
         );
+
+    }
 
     document.addEventListener(
         "keydown", 

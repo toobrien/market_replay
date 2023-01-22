@@ -26,9 +26,10 @@ dom_config["dimensions"]["dom_width"] = dom_config["dimensions"]["profile_cell_w
 dom_config["dimensions"]["row_width"] = dom_config["dimensions"]["dom_width"] - \
                                         dom_config["dimensions"]["scroll_bar_width"]
 
-SC_ROOT = app_config["sc_root"]
-SYMBOLS = {}
-DATE    = None
+SC_ROOT             = app_config["sc_root"]
+SYMBOLS             = {}
+FRIENDLY_SYMBOLS    = []
+DATE                = None
 
 
 # ROUTES
@@ -64,6 +65,7 @@ def get_root():
     return render_template(
                             "index.html",
                             symbols             = SYMBOLS,
+                            friendly_symbols    = FRIENDLY_SYMBOLS,
                             dom_height          = dom_config["dimensions"]["dom_height"],
                             dom_width           = dom_config["dimensions"]["dom_width"],
                             server              = f"{app_config['hostname']}:{app_config['port']}",
@@ -98,6 +100,11 @@ if __name__ == "__main__":
             if key in sym:
 
                 SYMBOLS[sym] = multiplier
+
+                FRIENDLY_SYMBOLS.append(
+                                            sym.split(".")[0] if "." in sym else 
+                                            sym.split("_")[0]
+                                        ) 
     
     app.run(
         host = app_config["hostname"],
