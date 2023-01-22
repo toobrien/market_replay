@@ -1,6 +1,7 @@
 from flask      import Flask, Response, render_template, send_file
 from flask_cors import CORS
 from json       import dumps, loads
+from re         import search
 from sys        import argv
 
 
@@ -30,6 +31,8 @@ SC_ROOT             = app_config["sc_root"]
 SYMBOLS             = {}
 FRIENDLY_SYMBOLS    = []
 DATE                = None
+SINGLE_PATTERN      = "_FUT_CME"
+CAL_PATTERN         = ".FUT_SPREAD.CME"
 
 
 # ROUTES
@@ -93,18 +96,25 @@ if __name__ == "__main__":
 
     for sym in syms:
 
-        # this method won't work for all spreads -- replace with regex later
-
         for key, multiplier in sym_config.items():
 
-            if key in sym:
+            friendly = None
+
+            if search(f"^{key}.*{SINGLE_PATTERN}", sym):
+
+                friendly = sym.split("_")[0]
+
+            elif search(f"^{key}.*{CAL_PATTERN}", sym):
+
+                friendly = sym.split(".")[0]
+
+            if friendly:
 
                 SYMBOLS[sym] = multiplier
 
-                FRIENDLY_SYMBOLS.append(
-                                            sym.split(".")[0] if "." in sym else 
-                                            sym.split("_")[0]
-                                        ) 
+                FRIENDLY_SYMBOLS.append(friendly) 
+
+                break
     
     app.run(
         host = app_config["hostname"],
