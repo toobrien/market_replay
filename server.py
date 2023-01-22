@@ -84,6 +84,7 @@ def get_root():
 
 if __name__ == "__main__":
 
+
     if argv[1] == "watchlist":
 
         syms = watchlists[argv[2]]
@@ -112,7 +113,7 @@ if __name__ == "__main__":
 
                 SYMBOLS[sym] = multiplier
 
-                FRIENDLY_SYMBOLS.append(friendly) 
+                FRIENDLY_SYMBOLS.append(friendly)
 
                 break
     
