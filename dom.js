@@ -219,9 +219,9 @@ class dom {
         this.profile_cell_offset    = 0;
         this.price_cell_offset      = this.profile_cell_offset + this.profile_cell_width;
         this.bid_depth_cell_offset  = this.price_cell_offset + this.price_cell_width;
-        this.ask_print_cell_offset  = this.bid_depth_cell_offset + this.depth_cell_width;
-        this.bid_print_cell_offset  = this.ask_print_cell_offset + this.print_cell_width;
-        this.ask_depth_cell_offset  = this.bid_print_cell_offset + this.print_cell_width;
+        this.bid_print_cell_offset  = this.bid_depth_cell_offset + this.depth_cell_width;
+        this.ask_print_cell_offset  = this.bid_print_cell_offset + this.print_cell_width;
+        this.ask_depth_cell_offset  = this.ask_print_cell_offset + this.print_cell_width;
         this.ltq_cell_offset        = this.ask_depth_cell_offset + this.depth_cell_width;
 
     }
