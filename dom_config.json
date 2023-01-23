@@ -6,7 +6,7 @@
         "print_cell_width":     30,
         "ltq_cell_width":       30,
         "text_margin":          3,
-        "row_height":           12,
+        "row_height":           10,
         "dom_height":           1100,
         "scroll_bar_width":     10
     },
