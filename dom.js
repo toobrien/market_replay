@@ -41,8 +41,10 @@ class dom {
 
     symbol                  = null;
     
+    is_bond                 = null;
+    bond_adj                = null;
     tick_size               = null;
-    tick_size_int           = null;
+    tick_size_adj           = null;
     price_adjust            = null;
 
     it                      = null;
@@ -162,7 +164,7 @@ class dom {
         this.records        = records;
         this.max_depth      = dom_config["depth"]["max_depth"];
 
-        this.initialize_tick_size_int();
+        this.initialize_tick_size_adj();
         this.initialize_dimensions(dom_config);
         this.initialize_offsets();
         this.initialize_price_range();
@@ -179,11 +181,31 @@ class dom {
     }
 
 
-    initialize_tick_size_int() {
+    initialize_tick_size_adj() {
 
-        this.price_precision    = this.tick_size.toString().split(".")[1].length;
-        this.price_adjust       = 10 ** -this.price_precision;
-        this.tick_size_int      = this.tick_size * 10 ** this.price_precision;
+        const sym = this.symbol.substring(0,2);
+
+        this.is_bond = ["ZB", "ZN", "ZF", "ZT"].includes(sym);
+
+        if (this.is_bond) {
+
+            this.price_precision    = 3;
+            this.price_adjust       = 1;
+            this.tick_size_adj      = this.tick_size;
+            this.bond_adj          =   sym === "ZB" ?  0  : 
+                                        sym === "ZN" ? 1  :
+                                        sym === "ZF" ? 1  :
+                                        sym === "ZT" ? 0  :
+                                        null;   // invalid
+
+        } else {
+
+            this.price_precision    = this.tick_size.toString().split(".")[1].length;
+            this.price_adjust       = 10 ** -this.price_precision;
+            this.tick_size_adj      = this.tick_size * 10 ** this.price_precision;
+
+        }
+        
 
     }
 
@@ -251,7 +273,7 @@ class dom {
 
             if (rec.length == dom.t_len) {
 
-                this.last_price = rec[dom.t_price] / this.tick_size_int;
+                this.last_price = rec[dom.t_price] / this.tick_size_adj;
                 
                 break;
 
@@ -259,9 +281,9 @@ class dom {
 
         }
 
-        this.max_price = this.max_price + (this.max_depth * this.tick_size_int);
-        this.min_price = this.min_price - (this.max_depth * this.tick_size_int);
-        this.num_prices = (this.max_price - this.min_price) / this.tick_size_int + 1;
+        this.max_price = this.max_price + (this.max_depth * this.tick_size_adj);
+        this.min_price = this.min_price - (this.max_depth * this.tick_size_adj);
+        this.num_prices = (this.max_price - this.min_price) / this.tick_size_adj + 1;
 
         // fill price text array with all prices here to avoid dynamic allocations
 
@@ -271,12 +293,41 @@ class dom {
 
         var price               = 0.0;
 
-        for (let i = 0; i < this.num_prices; i++) {
+        if (this.is_bond) {
 
-            price = (this.max_price - i * this.tick_size_int) * this.price_adjust;
-            this.price_text_arr[i] = String(price.toFixed(this.price_precision)).padStart(this.price_char_width);
+            for (let i = 0; i < this.num_prices; i++) {
+
+                price = (this.max_price - i * this.tick_size_adj);
+
+                var price_int   = price | 0;
+                var price_frac  = price - price_int;
+                var num_32      = price_frac * 32;
+                var int_32      = num_32 | 0;
+                var rem_32      = num_32 - int_32;
+                var rem_256     = rem_32 * 8;
+                var last_digit  =   rem_256 == 2 ? 2 :                      // for ZF
+                                    rem_256 > 0 ? rem_256 + this.bond_adj : // for ZN, ZF, ZT
+                                    0;
+
+                var bond_price  =   String(price_int) + "'" + 
+                                    String(int_32).padStart(2, "0") + "'" + 
+                                    String(last_digit);
+
+                this.price_text_arr[i] = bond_price;
+
+            }
+
+        } else {
+
+            for (let i = 0; i < this.num_prices; i++) {
+
+                price = (this.max_price - i * this.tick_size_adj) * this.price_adjust;
+                this.price_text_arr[i] = String(price.toFixed(this.price_precision)).padStart(this.price_char_width);
+    
+            }
 
         }
+
 
     }
 
@@ -585,7 +636,7 @@ class dom {
                 qty   = rec[dom.t_qty];
                 side  = rec[dom.t_side];
 
-                i = (this.max_price - price) / this.tick_size_int;
+                i = (this.max_price - price) / this.tick_size_adj;
 
                 this.last_price = i;
 
@@ -641,7 +692,7 @@ class dom {
 
                 price = rec[dom.d_price];
                 qty   = rec[dom.d_qty];
-                i     = (this.max_price - price) / this.tick_size_int;
+                i     = (this.max_price - price) / this.tick_size_adj;
 
                 switch (rec[dom.d_cmd]) {
 
