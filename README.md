@@ -82,6 +82,7 @@ Note that you need to edit the first line of this script to ensure the `MarketDe
 
 I still need to do a lot of testing and work out bugs. Some plans:
 
+- Some contracts (e.g. currencies, VX) do not work.
 - Probably add more controls.
 - Look for ways to decrease the loading time.
 

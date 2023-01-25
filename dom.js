@@ -160,7 +160,7 @@ class dom {
         this.symbol         = symbol;
         this.it             = 0;
         this.ts             = 0;
-        this.tick_size      = tick_size;
+        this.tick_size      = parseFloat(tick_size);
         this.records        = records;
         this.max_depth      = dom_config["depth"]["max_depth"];
 
@@ -200,7 +200,16 @@ class dom {
 
         } else {
 
-            this.price_precision    = this.tick_size.toString().split(".")[1].length;
+            var tick_string = this.tick_size.toString();
+
+            if (tick_string.indexOf("e") != -1)
+
+                this.price_precision = Math.abs(parseInt(tick_string.split("e")[1]));
+
+            else
+            
+                this.price_precision    = this.tick_size.toString().split(".")[1].length;
+            
             this.price_adjust       = 10 ** -this.price_precision;
             this.tick_size_adj      = this.tick_size * 10 ** this.price_precision;
 
