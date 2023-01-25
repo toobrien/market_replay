@@ -183,11 +183,11 @@ class dom {
 
     initialize_adjustments() {
 
-        const sym = this.symbol.substring(0,2);
+        const sym_root = this.symbol.substring(0,2);
 
         // for accurate bond price strings
 
-        this.is_bond = ["ZB", "ZN", "ZF", "ZT"].includes(sym);
+        this.is_bond = ["ZB", "ZN", "ZF", "ZT"].includes(sym_root);
 
         if (this.is_bond)
 
@@ -197,20 +197,10 @@ class dom {
                                         sym === "ZT" ?  0 :
                                         null;   // invalid
 
-        // convert tick_size and multiplier to float, note price precision
+        this.price_precision    = this.tick_size.split(".")[1].length;
+        this.tick_size          = parseFloat(this.tick_size);
+        this.multiplier         = parseFloat(this.multiplier);
 
-        var tick_string = this.tick_size;
-
-        this.tick_size  = parseFloat(this.tick_size);
-        this.multiplier = parseFloat(this.multiplier);
-
-        if (tick_string.indexOf("e") != -1)
-
-            this.price_precision = Math.abs(parseInt(tick_string.split("e")[1]));
-
-        else
-        
-            this.price_precision    = this.tick_size.toString().split(".")[1].length;
 
     }
 
@@ -298,8 +288,7 @@ class dom {
 
         // fill price text array with all prices here to avoid dynamic allocations
 
-        this.price_char_width   = this.max_price.toString().length; 
-        
+        this.price_char_width   = this.max_price.toFixed(this.price_precision).length;
         this.price_text_arr     = new Array(this.num_prices);
 
         var price               = 0.0;
