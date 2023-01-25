@@ -39,7 +39,7 @@ async function init() {
 
         symbol_data[sym]                = {};
         symbol_data[sym]["records"]     = i++;
-        symbol_data[sym]["tick_size"]   = symbols[sym];
+        symbol_data[sym]["config"]      = symbols[sym];
 
         promises.push(records);
         
@@ -63,7 +63,7 @@ async function init() {
             new dom(
                 sym,
                 symbol_data[sym]["records"],
-                symbol_data[sym]["tick_size"],
+                symbol_data[sym]["config"],
                 dom_config
             )
         );

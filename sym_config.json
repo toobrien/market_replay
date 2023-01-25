@@ -1,43 +1,212 @@
 {
-    "CL":  0.01,
-    "HO":  0.0001,
-    "RB":  0.0001,
-    "NG":  0.001,
-    "ES":  0.25,
-    "NQ":  0.25,
-    "RTY": 0.10,
-    "VX":  0.05,
-    "ZC":  0.25,
-    "ZW":  0.25,
-    "KE":  0.25,
-    "ZS":  0.25,
-    "ZM":  0.1,
-    "ZL":  0.01,
-    "ZO":  0.25,
-    "ZR":  0.005,
-    "HE":  0.025,
-    "LE":  0.025,
-    "GF":  0.025,
-    "GC":  0.1,
-    "SI":  0.005,
-    "HG":  0.0001,
-    "PL":  0.1,
-    "GE":  0.005,
-    "ZQ":  0.0025,
-    "SR1": 0.0025,
-    "SR3": 0.0025,
-    "ZB":  0.03125,
-    "ZN":  0.015625,
-    "ZF":  0.0078125,
-    "ZT":  0.00390625,
-    "6J":  "0.0000005",
-    "6E":  0.00005,
-    "6B":  0.0001,
-    "6C":  0.00005,
-    "6A":  0.00005,
-    "6M":  0.00001,
-    "6R":  0.000005,
-    "6N":  0.00005,
-    "6S":  0.00005,
-    "6L":  0.00005
+  "CL": {
+    "multiplier": "0.01",
+    "tick_size":  "0.01",
+    "exchange":   "CME"
+  },
+  "HO": {
+    "multiplier": "0.0001",
+    "tick_size":  "0.0001",
+    "exchange":   "CME"
+  },
+  "RB": {
+    "multiplier": "0.0001",
+    "tick_size":  "0.0001",
+    "exchange":   "CME"
+  },
+  "NG": {
+    "multiplier": "0.001",
+    "tick_size":  "0.001",
+    "exchange":   "CME"
+  },
+  "ES": {
+    "multiplier": "0.01",
+    "tick_size":  "0.25",
+    "exchange":   "CME"
+  },
+  "NQ": {
+    "multiplier": "0.01",
+    "tick_size":  "0.25",
+    "exchange":   "CME"
+  },
+  "RTY": {
+    "multiplier": "0.01",
+    "tick_size":  "0.1",
+    "exchange":   "CME"
+  },
+  "YM": {
+    "multiplier": "1",
+    "tick_size":  "1",
+    "exchange":   "CME"
+  },
+  "VX": {
+    "multiplier": "1",
+    "tick_size":  "0.05",
+    "exchange":   "CFE"
+  },
+  "ZC": {
+    "multiplier": "1",
+    "tick_size":  "0.25",
+    "exchange":   "CME"
+  },
+  "ZW": {
+    "multiplier": "1",
+    "tick_size":  "0.25",
+    "exchange":   "CME"
+  },
+  "KE": {
+    "multiplier": "1",
+    "tick_size":  "0.25",
+    "exchange":   "CME"
+  },
+  "ZS": {
+    "multiplier": "1",
+    "tick_size":  "0.25",
+    "exchange":   "CME"
+  },
+  "ZM": {
+    "multiplier": "0.1",
+    "tick_size":  "0.1",
+    "exchange":   "CME"
+  },
+  "ZL": {
+    "multiplier": "0.01",
+    "tick_size":  "0.01",
+    "exchange":   "CME"
+  },
+  "ZO": {
+    "multiplier": "1",
+    "tick_size":  "0.25",
+    "exchange":   "CME"
+  },
+  "ZR": {
+    "multiplier": "0.001",
+    "tick_size":  "0.005",
+    "exchange":   "CME"
+  },
+  "HE": {
+    "multiplier": "0.001",
+    "tick_size":  "0.025",
+    "exchange":   "CME"
+  },
+  "LE": {
+    "multiplier": "0.001",
+    "tick_size":  "0.025",
+    "exchange":   "CME"
+  },
+  "GF": {
+    "multiplier": "0.001",
+    "tick_size":  "0.025",
+    "exchange":   "CME"
+  },
+  "GC": {
+    "multiplier": "0.1",
+    "tick_size":  "0.1",
+    "exchange":   "CME"
+  },
+  "SI": {
+    "multiplier": "0.001",
+    "tick_size":  "0.005",
+    "exchange":   "CME"
+  },
+  "HG": {
+    "multiplier": "0.0001",
+    "tick_size":  "0.0001",
+    "exchange":   "CME"
+  },
+  "PL": {
+    "multiplier": "0.1",
+    "tick_size":  "0.1",
+    "exchange":   "CME"
+  },
+  "GE": {
+    "multiplier": "0.01",
+    "tick_size":  "0.005",
+    "exchange":   "CME"
+  },
+  "ZQ": {
+    "multiplier": "0.01",
+    "tick_size":  "0.0025",
+    "exchange":   "CME"
+  },
+  "SR1": {
+    "multiplier": "0.01",
+    "tick_size":  "0.0025",
+    "exchange":   "CME"
+  },
+  "SR3": {
+    "multiplier": "0.01",
+    "tick_size":  "0.0025",
+    "exchange":   "CME"
+  },
+  "ZB": {
+    "multiplier": "1",
+    "tick_size":  "0.03125",
+    "exchange":   "CME"
+  },
+  "ZN": {
+    "multiplier": "1",
+    "tick_size":  "0.015625",
+    "exchange":   "CME"
+  },
+  "ZF": {
+    "multiplier": "1",
+    "tick_size":  "0.0078125",
+    "exchange":   "CME"
+  },
+  "ZT": {
+    "multiplier": "1",
+    "tick_size":  "0.00390625",
+    "exchange":   "CME"
+  },
+  "6J": {
+    "multiplier": "0.000001",
+    "tick_size":  "0.0000005",
+    "exchange":   "CME"
+  },
+  "6E": {
+    "multiplier": "0.0001",
+    "tick_size":  "0.00005",
+    "exchange":   "CME"
+  },
+  "6B": {
+    "multiplier": "0.0001",
+    "tick_size":  "0.0001",
+    "exchange":   "CME"
+  },
+  "6C": {
+    "multiplier": "0.0001",
+    "tick_size":  "0.00005",
+    "exchange":   "CME"
+  },
+  "6A": {
+    "multiplier": "0.0001",
+    "tick_size":  "0.00005",
+    "exchange":   "CME"
+  },
+  "6M": {
+    "multiplier": "0.000001",
+    "tick_size":  "0.00001",
+    "exchange":   "CME"
+  },
+  "6R": {
+    "multiplier": "0.000001",
+    "tick_size":  "0.000005",
+    "exchange":   "CME"
+  },
+  "6N": {
+    "multiplier": "0.0001",
+    "tick_size":  "0.00005",
+    "exchange":   "CME"
+  },
+  "6S": {
+    "multiplier": "0.0001",
+    "tick_size":  "0.00005",
+    "exchange":   "CME"
+  },
+  "6L": {
+    "multiplier": "0.00001",
+    "tick_size":  "0.00005",
+    "exchange":   "CME"
+  }
 }

@@ -31,8 +31,6 @@ SC_ROOT             = app_config["sc_root"]
 SYMBOLS             = {}
 FRIENDLY_SYMBOLS    = []
 DATE                = None
-SINGLE_PATTERN      = "_FUT_CME"
-CAL_PATTERN         = ".FUT_SPREAD.CME"
 
 
 # ROUTES
@@ -97,21 +95,22 @@ if __name__ == "__main__":
 
     for sym in syms:
 
-        for key, multiplier in sym_config.items():
+        for key, config in sym_config.items():
 
+            exchange = config["exchange"]
             friendly = None
 
-            if search(f"^{key}.*{SINGLE_PATTERN}", sym):
+            if search(f"^{key}.*_FUT_{exchange}", sym):
 
                 friendly = sym.split("_")[0]
 
-            elif search(f"^{key}.*{CAL_PATTERN}", sym):
+            elif search(f"^{key}.*\.FUT_SPREAD\.{exchange}", sym):
 
                 friendly = sym.split(".")[0]
 
             if friendly:
 
-                SYMBOLS[sym] = multiplier
+                SYMBOLS[sym] = config
 
                 FRIENDLY_SYMBOLS.append(friendly)
 
