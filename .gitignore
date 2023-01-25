@@ -2,6 +2,3 @@ __pycache__
 .DS_Store
 .vscode
 test.sh
-canvas_test.html
-seq_test.py
-out.txt

@@ -20,5 +20,11 @@
         "ESG23_FUT_CME",
         "NQG23_FUT_CME",
         "RTYG23_FUT_CME"    
+    ],
+    "bonds": [
+        "ZBH23_FUT_CME",
+        "ZNH23_FUT_CME",
+        "ZFH23_FUT_CME",
+        "ZTH23_FUT_CME"
     ]
 }
