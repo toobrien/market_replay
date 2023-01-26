@@ -23,6 +23,12 @@ class dom_manager {
 
     speed_input         = null;
     speed_button        = null;
+    speed_1_button      = null;
+    speed_10_button     = null;
+    speed_25_button     = null;
+    speed_50_button     = null;
+    speed_100_button    = null;
+    speed_250_button    = null;
 
 
     constructor(doms, update_ms, utc_offset) {
@@ -52,10 +58,28 @@ class dom_manager {
         this.timestamp_button.onclick       = this.set_ts.bind(this);
 
         this.speed_input                    = document.getElementById("speed_input");
+        this.speed_input.value              = this.multiplier.toFixed(1);
+
         this.update_speed_button            = document.getElementById("speed_button");
         this.update_speed_button.onclick    = this.set_multiplier.bind(this);
 
-        this.speed_input.value = this.multiplier.toFixed(1);
+        this.speed_1_button                 = document.getElementById("speed_1_button");
+        this.speed_1_button.onclick         = this.set_multiplier_from_button.bind(this);
+        
+        this.speed_10_button                = document.getElementById("speed_10_button");
+        this.speed_10_button.onclick        = this.set_multiplier_from_button.bind(this);
+
+        this.speed_25_button                = document.getElementById("speed_25_button");
+        this.speed_25_button.onclick        = this.set_multiplier_from_button.bind(this);
+
+        this.speed_50_button                = document.getElementById("speed_50_button");
+        this.speed_50_button.onclick        = this.set_multiplier_from_button.bind(this);
+
+        this.speed_100_button                = document.getElementById("speed_100_button");
+        this.speed_100_button.onclick        = this.set_multiplier_from_button.bind(this);
+
+        this.speed_250_button                = document.getElementById("speed_250_button");
+        this.speed_250_button.onclick        = this.set_multiplier_from_button.bind(this);
 
     }
 
@@ -129,6 +153,18 @@ class dom_manager {
 
         return ts;
         
+    }
+
+
+    set_multiplier_from_button(e) {
+
+        const new_multiplier    = parseFloat(e.target.innerHTML);
+
+        this.multiplier         = new_multiplier;
+        this.interval_us        = this.update_ms * 1000 * new_multiplier;
+
+        this.speed_input.value  = new_multiplier;
+
     }
 
 
