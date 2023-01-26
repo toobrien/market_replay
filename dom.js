@@ -191,10 +191,10 @@ class dom {
 
         if (this.is_bond)
 
-            this.bond_adj           =   sym === "ZB" ?  0 : 
-                                        sym === "ZN" ?  1 :
-                                        sym === "ZF" ?  1 :
-                                        sym === "ZT" ?  0 :
+            this.bond_adj           =   sym_root === "ZB" ?  0 : 
+                                        sym_root === "ZN" ?  1 :
+                                        sym_root === "ZF" ?  1 :
+                                        sym_root === "ZT" ?  0 :
                                         null;   // invalid
 
         this.price_precision    = this.tick_size.split(".")[1].length;
