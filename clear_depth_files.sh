@@ -2,7 +2,7 @@
 
 date=$1
 
-cd '/Volumes/[C] Windows 11/SierraChart/Data/MarketDepthData' 
+cd '/Volumes/[C] Windows 10/SierraChart/Data/MarketDepthData' 
 
 for file in $(find . -type f -name "*.depth")
 do

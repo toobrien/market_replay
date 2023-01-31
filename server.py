@@ -19,6 +19,7 @@ sym_config      = loads(open("./sym_config.json", "r").read())
 
 dom_config["dimensions"]["dom_width"] = dom_config["dimensions"]["profile_cell_width"]      + \
                                         dom_config["dimensions"]["price_cell_width"]        + \
+                                        dom_config["dimensions"]["trade_cell_width"] * 2    + \
                                         dom_config["dimensions"]["depth_cell_width"] * 2    + \
                                         dom_config["dimensions"]["print_cell_width"] * 2    + \
                                         dom_config["dimensions"]["ltq_cell_width"]          + \
