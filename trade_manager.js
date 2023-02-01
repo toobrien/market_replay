@@ -130,6 +130,11 @@ class trade_manager {
                 o.state         = order.state_cancelled;
                 o.cancelled_ts  = this.parent.ts;
 
+                if (!e.shiftKey)
+
+                    if (is_bid_order) this.cancel_orders(true, false) 
+                    else this.cancel_orders(false, true);
+
                 return;
 
             }
@@ -162,6 +167,10 @@ class trade_manager {
 
             o.queue_pos = bid_depth_col[price];
 
+            if (!e.shiftKey)
+
+                this.cancel_orders(true, false);
+
         } else {
         
             o.type      =   price >= best_bid ? order.type_mkt     :
@@ -169,6 +178,10 @@ class trade_manager {
                             null; // invalid
 
             o.queue_pos = ask_depth_col[price];
+
+            if (!e.shiftKey)
+
+                this.cancel_orders(false, true);
 
         }
 
@@ -179,11 +192,24 @@ class trade_manager {
     }
 
 
-    cancel_orders() {
+    cancel_orders(cancel_bids, cancel_asks) {
 
-        for (let o of this.orders)
+        for (let o of this.orders) {
 
-            o.state = order.state_cancelled;
+            if (
+                o.state == order.state_active &&
+                (
+                    (o.side == order.side_long && cancel_bids) ||
+                    (o.side == order.side_short && cancel_asks)
+                )
+            ) {
+
+                o.state         = order.state_cancelled;
+                o.cancelled_ts  = this.parent.ts;
+            
+            }
+
+        }
 
     }
 

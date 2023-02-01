@@ -90,7 +90,7 @@ async function init() {
 
                 for (const dom of doms)
 
-                    dom.tm.cancel_orders();
+                    dom.tm.cancel_orders(true, true);
 
             }
 
