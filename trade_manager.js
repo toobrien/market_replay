@@ -179,6 +179,15 @@ class trade_manager {
     }
 
 
+    cancel_orders() {
+
+        for (let o of this.orders)
+
+            o.state = order.state_cancelled;
+
+    }
+
+
     update(high_trade, low_trade) {
 
         if (!this.orders)

@@ -1,9 +1,10 @@
 {
-  "sc_root":          "/Volumes/[C] Windows 10/SierraChart",
-  "hostname":         "localhost",
-  "port":             8080,
-  "center_dom_key":   "q",
-  "clear_prints_key": "w",
-  "update_ms":        10,
-  "utc_offset":       -8
+  "sc_root":            "/Volumes/[C] Windows 10/SierraChart",
+  "hostname":           "localhost",
+  "port":               8080,
+  "center_dom_key":     "q",
+  "clear_prints_key":   "w",
+  "cancel_orders_key":  "x",
+  "update_ms":          10,
+  "utc_offset":         -8
 }

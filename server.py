@@ -73,6 +73,7 @@ def get_root():
                             server              = f"{app_config['hostname']}:{app_config['port']}",
                             center_dom_key      = app_config["center_dom_key"],
                             clear_prints_key    = app_config["clear_prints_key"],
+                            cancel_orders_key   = app_config["cancel_orders_key"],
                             update_ms           = app_config["update_ms"],
                             utc_offset          = app_config["utc_offset"]
                         )

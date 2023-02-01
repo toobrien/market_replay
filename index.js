@@ -84,7 +84,13 @@ async function init() {
 
                 for (const dom of doms)
 
-                    dom.clear_prints()
+                    dom.clear_prints();
+
+            } else if (e.key === cancel_orders_key) {
+
+                for (const dom of doms)
+
+                    dom.tm.cancel_orders();
 
             }
 
