@@ -67,6 +67,7 @@ class trade_manager {
     positions           = null;
     realized_pnl        = null;
     row_height_total    = null;
+    trade_log           = null;
 
 
     constructor(parent) {
@@ -78,6 +79,8 @@ class trade_manager {
         this.positions          = new Array();
         this.realized_pnl       = 0;
         this.row_height_total   = this.parent.row_height + this.parent.row_offset;
+        this.trade_log          = document.getElementById("trade_log");
+
         this.ask_cell_range     = [
                                     this.parent.ask_depth_cell_offset,
                                     this.parent.ask_depth_cell_offset + this.parent.depth_cell_width
@@ -375,9 +378,24 @@ class trade_manager {
 
         }
 
-        if (pos.state != position.state_closed)
+        // open position
+
+        if (pos.state != position.state_closed) {
+
+            const side_text     = pos.side == position.side_long ? "BUY" : "SELL";
+            const price_text    = this.parent.price_text_arr[pos.price];
+            const qty_text      = Math.abs(pos.qty);
+
+            trade_log.innerHTML =   `${this.parent.friendly_symbol}`    +
+                                    `\torder_id: ${pos.id}`             +
+                                    `\t${side_text}`                    +
+                                    `\tqty: ${qty_text}`                +
+                                    `\tprice: ${price_text}\n`          +
+                                    trade_log.innerHTML;
 
             this.positions.push(pos);
+
+        }
 
     }
 
@@ -430,24 +448,20 @@ class trade_manager {
 
         }
 
-        // record trade
+        // close position
 
         let pnl = (open_price - close_price) * trade_side;
 
         this.realized_pnl += pnl;
 
-        let side_text           = order_side == position.side_long ? "BUY" : "SELL";
-        let open_price_text     = this.parent.price_text_arr[open_price];
-        let close_price_text    = this.parent.price_text_arr[close_price];
-        
-        const trade_log = document.getElementById("trade_log");
+        let side_text   = order_side == position.side_long ? "BUY" : "SELL";
+        let price_text  = this.parent.price_text_arr[close_price];
 
         trade_log.innerHTML =   `${this.parent.friendly_symbol}`    +
-                                `\torder_id: ${old_pos.id}`         +
+                                `\torder_id: ${new_pos.id}`         +
                                 `\t${side_text}`                    +
-                                `\topen: ${open_price_text}`        +
-                                `\tclose: ${close_price_text}`      +
                                 `\tqty: ${qty_traded}`              +
+                                `\tprice: ${price_text}`            +
                                 `\tpnl: ${pnl}\n`                   +
                                 trade_log.innerHTML;
     
