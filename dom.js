@@ -40,6 +40,7 @@ class dom {
     // symbol and state
 
     symbol              = null;
+    friendly_symbol     = null;
     
     multiplier          = null;
     tick_size           = null;
@@ -167,15 +168,21 @@ class dom {
     session_low_color           = null;
 
 
-    constructor(symbol, records, sym_config, dom_config) {
+    constructor(
+        symbol,
+        records,
+        sym_config,
+        dom_config
+    ) {
 
-        this.symbol         = symbol;
-        this.it             = 0;
-        this.ts             = 0;
-        this.multiplier     = sym_config["multiplier"];
-        this.tick_size      = sym_config["tick_size"];
-        this.records        = records;
-        this.max_depth      = dom_config["depth"]["max_depth"];
+        this.symbol             = symbol;
+        this.friendly_symbol    = sym_config["friendly_symbol"];
+        this.it                 = 0;
+        this.ts                 = 0;
+        this.multiplier         = sym_config["multiplier"];
+        this.tick_size          = sym_config["tick_size"];
+        this.records            = records;
+        this.max_depth          = dom_config["depth"]["max_depth"];
 
         this.initialize_adjustments();
         this.initialize_dimensions(dom_config);

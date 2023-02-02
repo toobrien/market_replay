@@ -55,7 +55,9 @@ async function init() {
 
     // initialize doms
 
-    const doms = [];
+    const doms  = [];
+    
+    i = 0;
 
     for (var sym in symbol_data) {
 

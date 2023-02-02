@@ -57,10 +57,15 @@
                     </td>
                     {% for symbol in symbols %}
                     <td id = "{{ symbol }}_dom_cell" style = "vertical-align: top;">
-                        <div id = "{{ symbol }}_dom_container" style="max-height: {{ dom_height }}px; max-width: {{ dom_width }}px; overflow: scroll;"></div>
+                        <div id = "{{ symbol }}_dom_container" style = "max-height: {{ dom_height }}px; max-width: {{ dom_width }}px; overflow: scroll;"></div>
                     </td>
                     {% endfor %}
                 <tr>
+                <tr>
+                    <td colspan = "2">
+                        <div id = "trade_log", style = "white-space: pre;max-height: 200px; overflow: scroll;"></div>
+                    </td>
+                </tr>
             </table>
         </div>
     </body>

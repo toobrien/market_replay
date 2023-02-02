@@ -440,14 +440,16 @@ class trade_manager {
         let open_price_text     = this.parent.price_text_arr[open_price];
         let close_price_text    = this.parent.price_text_arr[close_price];
         
-        console.log(
-                        `order_id: ${old_pos.id}`       +
-                        `\t${side_text}`                +
-                        `\topen: ${open_price_text}`    +
-                        `\tclose: ${close_price_text}`  +
-                        `\tqty: ${qty_traded}`          +
-                        `\tpnl: ${pnl}`
-                    );
+        const trade_log = document.getElementById("trade_log");
+
+        trade_log.innerHTML =   `${this.parent.friendly_symbol}`    +
+                                `\torder_id: ${old_pos.id}`         +
+                                `\t${side_text}`                    +
+                                `\topen: ${open_price_text}`        +
+                                `\tclose: ${close_price_text}`      +
+                                `\tqty: ${qty_traded}`              +
+                                `\tpnl: ${pnl}\n`                   +
+                                trade_log.innerHTML;
     
     }
 

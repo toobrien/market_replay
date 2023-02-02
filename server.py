@@ -30,7 +30,6 @@ dom_config["dimensions"]["row_width"] = dom_config["dimensions"]["dom_width"] - 
 
 SC_ROOT             = app_config["sc_root"]
 SYMBOLS             = {}
-FRIENDLY_SYMBOLS    = []
 DATE                = None
 
 
@@ -67,7 +66,7 @@ def get_root():
     return render_template(
                             "index.html",
                             symbols             = SYMBOLS,
-                            friendly_symbols    = FRIENDLY_SYMBOLS,
+                            friendly_symbols    = [ config["friendly_symbol"] for sym, config in SYMBOLS.items() ],
                             dom_height          = dom_config["dimensions"]["dom_height"],
                             dom_width           = dom_config["dimensions"]["dom_width"],
                             server              = f"{app_config['hostname']}:{app_config['port']}",
@@ -112,9 +111,9 @@ if __name__ == "__main__":
 
             if friendly:
 
+                config["friendly_symbol"] = friendly
+                
                 SYMBOLS[sym] = config
-
-                FRIENDLY_SYMBOLS.append(friendly)
 
                 break
     
