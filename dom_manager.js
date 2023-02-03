@@ -2,6 +2,7 @@
 
 class dom_manager {
 
+
     // sc_to_unix_us = microseconds between 1899-12-30 00:00:00 UTC and 1971-01-01 00:00:00 UTC
     // utc_offset_us is the user-selected offset from app_config
 
@@ -20,6 +21,11 @@ class dom_manager {
 
     timestamp_input     = null;
     timestamp_button    = null;
+
+    total_open_cell     = null;
+    total_realized_cell = null;
+
+    qty_select          = null;
 
     speed_input         = null;
     speed_button        = null;
@@ -53,9 +59,15 @@ class dom_manager {
         this.latest_date_div                = document.getElementById("latest_date_div");
         this.latest_date_div.innerHTML      = this.ts_to_date_string(this.ts);
 
+        this.total_open_cell                = document.getElementById("total_open_cell");
+        this.total_realized_cell            = document.getElementById("total_realized_cell");
+
         this.timestamp_input                = document.getElementById("timestamp_input");
         this.timestamp_button               = document.getElementById("timestamp_button");
         this.timestamp_button.onclick       = this.set_ts.bind(this);
+
+        this.qty_select                     = document.getElementById("qty_select");
+        this.qty_select.onchange            = this.set_qty.bind(this);
 
         this.speed_input                    = document.getElementById("speed_input");
         this.speed_input.value              = this.multiplier.toFixed(1);
@@ -196,6 +208,17 @@ class dom_manager {
     }
 
 
+    set_qty(e) {
+
+        let qty = parseInt(e.target.value);
+
+        for (let d of this.doms)
+
+            d.tm.qty = qty;
+
+    }
+
+
     run() {
 
         this.play_button.innerHTML  = "pause";
@@ -206,9 +229,22 @@ class dom_manager {
                 
                 this.ts = this.ts + this.interval_us;
 
-                this.doms.forEach(d => { d.update(this.ts); });
+                let total_open_pnl     = 0;
+                let total_realized_pnl = 0;
+
+                for (let d of this.doms) {
+
+                    d.update(this.ts);
+
+                    total_open_pnl     += d.tm.open_pnl;
+                    total_realized_pnl += d.tm.realized_pnl;
+
+                }
 
                 this.latest_date_div.innerHTML = this.ts_to_date_string(this.ts);
+
+                this.total_open_cell.innerHTML      = total_open_pnl;
+                this.total_realized_cell.innerHTML  = total_realized_pnl;
 
             },
             this.update_ms

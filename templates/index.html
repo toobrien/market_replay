@@ -2,6 +2,14 @@
 <!doctype html>
 
 <html>
+    <head>
+        <style>
+            #trade_table td {
+                width: 70px;
+                text-align: right;
+            }
+        </style>
+    </head>
     <body id = "body">
         <div id = "loading_screen">loading...<br><br></div>
         <div id = "main_screen" style = "display: none;">
@@ -38,7 +46,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td></td>
+                                <td>speed</td>
                                 <td>
                                     <button id = "speed_1_button">1</button>
                                     <button id = "speed_10_button">10</button>
@@ -49,8 +57,44 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td>qty:</td>
+                                <td>
+                                    <select id = "qty_select">
+                                        {% for i in range(1, 101) %}
+                                            <option value = "{{i}}">{{i}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td colspan = "2">
                                     <button id = "play_button" style = "width: 125px;"></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan = "2">
+                                    <table id = "trade_table">
+                                        <tr>
+                                            <td><!-- symbol --></td>
+                                            <td>position</td>
+                                            <td>open</td>
+                                            <td>realized</td>
+                                        </tr>
+                                        {% for symbol in friendly_symbols %}
+                                        <tr>
+                                            <td>{{ symbol }}</td>
+                                            <td id = "{{ symbol }}_position_cell"></td>
+                                            <td id = "{{ symbol }}_open_cell"></td>
+                                            <td id = "{{ symbol }}_realized_cell"></td>
+                                        </tr>
+                                        {% endfor %}
+                                        <tr>
+                                            <td>total:</td>
+                                            <td><!-- blank --></td>
+                                            <td id = "total_open_cell">0</td>
+                                            <td id = "total_realized_cell">0</td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>

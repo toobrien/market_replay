@@ -54,7 +54,6 @@ class position {
 class trade_manager {
 
 
-    static qty              = 1;     // replace later with user input
     static num_stale_cycles = 10;    // for coloring filled/cancelled cells
 
     parent = null;
@@ -62,9 +61,14 @@ class trade_manager {
     ask_cell_range      = null;
     bid_cell_range      = null;
     next_id             = null;
+    open_cell           = null;
     open_pnl            = null;
     orders              = null;
+    position            = null;
     positions           = null;
+    position_cell       = null;
+    qty                 = null;
+    realized_cell       = null;
     realized_pnl        = null;
     row_height_total    = null;
     trade_log           = null;
@@ -74,9 +78,14 @@ class trade_manager {
 
         this.parent             = parent;
         this.next_id            = 0;
+        this.open_cell          = document.getElementById(`${this.parent.friendly_symbol}_open_cell`);
         this.open_pnl           = 0;
         this.orders             = new Array();
+        this.position           = 0;
         this.positions          = new Array();
+        this.position_cell      = document.getElementById(`${this.parent.friendly_symbol}_position_cell`);
+        this.qty                = parseInt(document.getElementById("qty_select").value);
+        this.realized_cell      = document.getElementById(`${this.parent.friendly_symbol}_realized_cell`);
         this.realized_pnl       = 0;
         this.row_height_total   = this.parent.row_height + this.parent.row_offset;
         this.trade_log          = document.getElementById("trade_log");
@@ -89,6 +98,10 @@ class trade_manager {
                                     this.parent.bid_depth_cell_offset,
                                     this.parent.bid_depth_cell_offset + this.parent.depth_cell_width
                                 ];
+        
+        this.open_cell.innerHTML     = this.open_pnl;
+        this.position_cell.innerHTML = this.position;
+        this.realized_cell.innerHTML = this.realized_pnl;
 
     }
 
@@ -158,7 +171,7 @@ class trade_manager {
         o.placed_ts     = this.parent.ts;
         o.stale_cycles  = trade_manager.num_stale_cycles;
         o.state         = order.state_active;
-        o.qty           = trade_manager.qty;
+        o.qty           = this.qty;
         o.side          = is_bid_order ? order.side_long : order.side_short;
         o.price         = price;
 
@@ -250,7 +263,7 @@ class trade_manager {
                             pos.id          = o.id;
                             pos.opened_ts   = this.parent.ts;
                             pos.price       = j;
-                            pos.qty         = traded;
+                            pos.qty         = traded * o.side;
                             pos.side        = o.side;
                             pos.state       = position.state_open;
 
@@ -347,7 +360,17 @@ class trade_manager {
         
         trade_col.fill(0, high_trade, low_trade);
 
-        this.mark_unrealized_pnl();
+        // update open pnl
+
+        this.open_pnl = 0;
+
+        for (let pos of this.positions)
+
+            if (pos.state != position.closed)
+
+                this.open_pnl += (pos.price - this.parent.last_price) * pos.qty;
+
+        this.open_cell.innerHTML = this.open_pnl;
 
     }
 
@@ -397,6 +420,18 @@ class trade_manager {
 
         }
 
+        // update position cell
+
+        this.position = 0;
+
+        for (let pos of this.positions)
+
+            if (pos.state != position.state_closed)
+
+                this.position += pos.qty;
+
+        this.position_cell.innerHTML = this.position;
+
     }
 
 
@@ -430,27 +465,27 @@ class trade_manager {
 
             qty_traded          = new_abs_qty;
 
+            old_pos.qty         += new_pos.qty;
+
             new_pos.closed_ts   = closed_ts;
             new_pos.qty         = 0;
             new_pos.state       = position.state_closed;
-
-            old_pos.qty         += new_pos.qty;
 
         } else {
 
             qty_traded          = old_abs_qty;
 
+            new_pos.qty         += old_pos.qty;
+
             old_pos.closed_ts   = closed_ts;
             old_pos.qty         = 0;
             old_pos.state       = position.state_closed;
-
-            new_pos.qty         += new_pos.qty;
 
         }
 
         // close position
 
-        let pnl = (open_price - close_price) * trade_side;
+        let pnl = (open_price - close_price) * qty_traded * trade_side;
 
         this.realized_pnl += pnl;
 
@@ -464,14 +499,11 @@ class trade_manager {
                                 `\tprice: ${price_text}`            +
                                 `\tpnl: ${pnl}\n`                   +
                                 trade_log.innerHTML;
+
+        // update realized cell
+
+        this.realized_cell.innerHTML = this.realized_pnl;
     
-    }
-
-
-    mark_unrealized_pnl() {
-
-        // ...
-
     }
 
     
@@ -553,6 +585,7 @@ class trade_manager {
 
         this.open_pnl       = 0
         this.orders         = new Array();
+        this.position       = 0;
         this.positions      = new Array();
         this.realized_pnl   = 0;
 
