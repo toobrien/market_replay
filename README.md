@@ -88,7 +88,7 @@ You can set the quantity of your offer using the control panel on the left.
 
 Your limit order is not displayed in the market depth, but the fills should be fairly accurate for FIFO markets. Pro-rata markets and other matching algorithms are not used; every symbol is treated as FIFO.
 
-Your open position will be reported in a table below the control panel, along with realized and open pnl (in ticks) for that symbol.
+Your open position will be reported in a table below the control panel, along with realized and open pnl (in ticks) for each symbol.
 
 # To do
 
