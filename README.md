@@ -82,7 +82,7 @@ Note that you need to edit the first line of this script to ensure the `MarketDe
 
 The application supports basic paper trading with limit and market orders. You submit orders by clicking the market depth column (i.e. red or blue columns). Clicking the bid column at a price below the best offer will submit a limit order. Clicking the bid column at or above the best offer will submit a market order. The same rules hold true for the ask column.
 
-By default, submitting a new bid cancels existing bid limit orders, and vice versa. If you hold the shift key, you can submit a new order without cancelling any old orders. This allows you to have multiple bids or offers active at the same time.
+By default, submitting a new bid cancels existing bid limit orders, and vice versa. If you hold the shift key, you can submit a new order without cancelling any old orders. This allows you to have multiple bids or offers active at the same time. You can also set a key ("x" by default) to cancel all existing orders.
 
 You can set the quantity of your offer using the control panel on the left.
 
