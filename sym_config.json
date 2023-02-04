@@ -286,5 +286,41 @@
     "tick_size":  "1.0",
     "tick_value": 25.0,
     "exchange":   "EUREX"
+  },
+  "FESX": {
+    "multiplier": "1.0",
+    "tick_size":  "1.0",
+    "tick_value": 10.0,
+    "exchange":   "EUREX"
+  },
+  "FGBL": {
+    "multiplier": "1.0",
+    "tick_size":  "0.01",
+    "tick_value": 10.0,
+    "exchange":   "EUREX"
+  },
+  "FGBM": {
+    "multiplier": "1.0",
+    "tick_size":  "0.01",
+    "tick_value": 10.0,
+    "exchange":   "EUREX"
+  },
+  "FGBS": {
+    "multiplier": "1.0",
+    "tick_size":  "0.005",
+    "tick_value": 5.0,
+    "exchange":   "EUREX"
+  },
+  "FBXL": {
+    "multiplier": "1.0",
+    "tick_size":  "0.02",
+    "tick_value": 20.0,
+    "exchange":   "EUREX"
+  },
+  "FVS": {
+    "multiplier": "1",
+    "tick_size":  "0.05",
+    "tick_value": 5,
+    "exchange":   "EUREX"
   }
 }
