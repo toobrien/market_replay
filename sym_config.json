@@ -48,7 +48,7 @@
     "exchange":   "CME"
   },
   "VX": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.05",
     "tick_value": 50.0,
     "exchange":   "CFE"
@@ -256,7 +256,7 @@
     "tick_size":  "0.00005",
     "tick_value": 6.25,
     "exchange":   "CME"
-  },
+  }, 
   "6L": {
     "multiplier": "0.00001",
     "tick_size":  "0.00005",
@@ -280,5 +280,11 @@
     "tick_size": "5.0",
     "tick_value": 25.0,
     "exchange": "CME"
+  },
+  "FDAX": {
+    "multiplier": "1.0",
+    "tick_size":  "1.0",
+    "tick_value": 25.0,
+    "exchange":   "EUREX"
   }
 }

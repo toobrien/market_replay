@@ -105,11 +105,21 @@ if __name__ == "__main__":
 
             if search(f"^{key}.*_FUT_{exchange}", sym):
 
+                # cme, cfe spread
+
                 friendly = sym.split("_")[0]
 
             elif search(f"^{key}.*\.FUT_SPREAD\.{exchange}", sym):
 
+                # cme spread
+
                 friendly = sym.split(".")[0]
+
+            elif search(f"^{key}.*-{exchange}", sym):
+
+                # eurex and cfe
+
+                friendly = sym.split("-")[0]
 
             if friendly:
 
