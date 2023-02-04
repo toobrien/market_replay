@@ -71,6 +71,7 @@ class trade_manager {
     realized_cell       = null;
     realized_pnl        = null;
     row_height_total    = null;
+    tick_value          = null;
     trade_log           = null;
 
 
@@ -79,15 +80,16 @@ class trade_manager {
         this.parent             = parent;
         this.next_id            = 0;
         this.open_cell          = document.getElementById(`${this.parent.friendly_symbol}_open_cell`);
-        this.open_pnl           = 0;
+        this.open_pnl           = 0.0;
         this.orders             = new Array();
         this.position           = 0;
         this.positions          = new Array();
         this.position_cell      = document.getElementById(`${this.parent.friendly_symbol}_position_cell`);
         this.qty                = parseInt(document.getElementById("qty_select").value);
         this.realized_cell      = document.getElementById(`${this.parent.friendly_symbol}_realized_cell`);
-        this.realized_pnl       = 0;
+        this.realized_pnl       = 0.0;
         this.row_height_total   = this.parent.row_height + this.parent.row_offset;
+        this.tick_value         = this.parent.tick_value;
         this.trade_log          = document.getElementById("trade_log");
 
         this.ask_cell_range     = [
@@ -362,13 +364,13 @@ class trade_manager {
 
         // update open pnl
 
-        this.open_pnl = 0;
+        this.open_pnl = 0.0;
 
         for (let pos of this.positions)
 
             if (pos.state != position.closed)
 
-                this.open_pnl += (pos.price - this.parent.last_price) * pos.qty;
+                this.open_pnl += (pos.price - this.parent.last_price) * pos.qty * this.tick_value;
 
         this.open_cell.innerHTML = this.open_pnl;
 
@@ -439,7 +441,6 @@ class trade_manager {
 
         let open_price  = old_pos.price;
         let close_price = new_pos.price;
-        let opened_ts   = old_pos.opened_ts;
         let closed_ts   = this.parent.ts;
         let qty_traded  = null;
         let trade_side  = old_pos.side;
@@ -485,7 +486,7 @@ class trade_manager {
 
         // close position
 
-        let pnl = (open_price - close_price) * qty_traded * trade_side;
+        let pnl = (open_price - close_price) * qty_traded * trade_side * this.tick_value;
 
         this.realized_pnl += pnl;
 
@@ -583,11 +584,11 @@ class trade_manager {
 
     reset() {
 
-        this.open_pnl       = 0
+        this.open_pnl       = 0.0
         this.orders         = new Array();
         this.position       = 0;
         this.positions      = new Array();
-        this.realized_pnl   = 0;
+        this.realized_pnl   = 0.0;
 
     }
 

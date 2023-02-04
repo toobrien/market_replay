@@ -2,211 +2,283 @@
   "CL": {
     "multiplier": "0.01",
     "tick_size":  "0.01",
+    "tick_value": 10.0,
     "exchange":   "CME"
   },
   "HO": {
     "multiplier": "0.0001",
     "tick_size":  "0.0001",
+    "tick_value": 4.2,
     "exchange":   "CME"
   },
   "RB": {
     "multiplier": "0.0001",
     "tick_size":  "0.0001",
+    "tick_value": 4.2,
     "exchange":   "CME"
   },
   "NG": {
     "multiplier": "0.001",
     "tick_size":  "0.001",
+    "tick_value": 10.0,
     "exchange":   "CME"
   },
   "ES": {
     "multiplier": "0.01",
     "tick_size":  "0.25",
+    "tick_value": 12.5,
     "exchange":   "CME"
   },
   "NQ": {
     "multiplier": "0.01",
     "tick_size":  "0.25",
+    "tick_value": 5.0,
     "exchange":   "CME"
   },
   "RTY": {
     "multiplier": "0.01",
     "tick_size":  "0.1",
+    "tick_value": 10.0,
     "exchange":   "CME"
   },
   "YM": {
-    "multiplier": "1",
-    "tick_size":  "1",
+    "multiplier": "1.0",
+    "tick_size":  "1.0",
+    "tick_value": 5.0,
     "exchange":   "CME"
   },
   "VX": {
     "multiplier": "1",
     "tick_size":  "0.05",
+    "tick_value": 50.0,
     "exchange":   "CFE"
   },
   "ZC": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.25",
+    "tick_value": 12.5,
     "exchange":   "CME"
   },
   "ZW": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.25",
+    "tick_value": 12.5,
     "exchange":   "CME"
   },
   "KE": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.25",
+    "tick_value": 12.5,
     "exchange":   "CME"
   },
   "ZS": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.25",
+    "tick_value": 12.5,
     "exchange":   "CME"
   },
   "ZM": {
     "multiplier": "0.1",
     "tick_size":  "0.1",
+    "tick_value": 10.0,
     "exchange":   "CME"
   },
   "ZL": {
     "multiplier": "0.01",
     "tick_size":  "0.01",
+    "tick_value": 6.0,
     "exchange":   "CME"
   },
   "ZO": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.25",
+    "tick_value": 12.5,
     "exchange":   "CME"
   },
   "ZR": {
     "multiplier": "0.001",
     "tick_size":  "0.005",
+    "tick_value": 10.0,
     "exchange":   "CME"
   },
   "HE": {
     "multiplier": "0.001",
     "tick_size":  "0.025",
+    "tick_value": 10.0,
     "exchange":   "CME"
   },
   "LE": {
     "multiplier": "0.001",
     "tick_size":  "0.025",
+    "tick_value": 10.0,
     "exchange":   "CME"
   },
   "GF": {
     "multiplier": "0.001",
     "tick_size":  "0.025",
+    "tick_value": 12.5,
     "exchange":   "CME"
   },
   "GC": {
     "multiplier": "0.1",
     "tick_size":  "0.1",
+    "tick_value": 10.0,
     "exchange":   "CME"
   },
   "SI": {
     "multiplier": "0.001",
     "tick_size":  "0.005",
+    "tick_value": 25.0,
     "exchange":   "CME"
   },
   "HG": {
     "multiplier": "0.0001",
     "tick_size":  "0.0001",
+    "tick_value": 12.5,
     "exchange":   "CME"
   },
   "PL": {
     "multiplier": "0.1",
     "tick_size":  "0.1",
+    "tick_value": 5.0,
+    "exchange":   "CME"
+  },
+  "PA": {
+    "multiplier": "1.0",
+    "tick_size":  "0.1",
+    "tick_value": 10,
     "exchange":   "CME"
   },
   "GE": {
     "multiplier": "0.01",
     "tick_size":  "0.005",
+    "tick_value": 12.5,
     "exchange":   "CME"
   },
   "ZQ": {
     "multiplier": "0.01",
     "tick_size":  "0.0025",
+    "tick_value": 10.4175,
     "exchange":   "CME"
   },
   "SR1": {
     "multiplier": "0.01",
     "tick_size":  "0.0025",
+    "tick_value": 10.4175,
     "exchange":   "CME"
   },
   "SR3": {
     "multiplier": "0.01",
     "tick_size":  "0.0025",
+    "tick_value": 6.25,
     "exchange":   "CME"
   },
   "ZB": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.03125",
+    "tick_value": 31.25,
     "exchange":   "CME"
   },
   "ZN": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.015625",
+    "tick_value": 15.625,
     "exchange":   "CME"
   },
   "ZF": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.0078125",
+    "tick_value": 7.8125,
     "exchange":   "CME"
   },
   "ZT": {
-    "multiplier": "1",
+    "multiplier": "1.0",
     "tick_size":  "0.00390625",
+    "tick_value": 7.8125,
     "exchange":   "CME"
+  },
+  "UB": {
+    "multiplier": "1.0",
+    "tick_size": "0.03125",
+    "tick_value": 31.25,
+    "exchange": "CME"
   },
   "6J": {
     "multiplier": "0.000001",
     "tick_size":  "0.0000005",
+    "tick_value": 6.25,
     "exchange":   "CME"
   },
   "6E": {
     "multiplier": "0.0001",
     "tick_size":  "0.00005",
+    "tick_value": 6.25,
     "exchange":   "CME"
   },
   "6B": {
     "multiplier": "0.0001",
     "tick_size":  "0.0001",
+    "tick_value": 6.25,
     "exchange":   "CME"
   },
   "6C": {
     "multiplier": "0.0001",
     "tick_size":  "0.00005",
+    "tick_value": 5.0,
     "exchange":   "CME"
   },
   "6A": {
     "multiplier": "0.0001",
     "tick_size":  "0.00005",
+    "tick_value": 5.0,
     "exchange":   "CME"
   },
   "6M": {
     "multiplier": "0.000001",
     "tick_size":  "0.00001",
+    "tick_value": 5.0,
     "exchange":   "CME"
   },
   "6R": {
     "multiplier": "0.000001",
     "tick_size":  "0.000005",
+    "tick_value": 25,
     "exchange":   "CME"
   },
   "6N": {
     "multiplier": "0.0001",
     "tick_size":  "0.00005",
+    "tick_value": 5,
     "exchange":   "CME"
   },
   "6S": {
     "multiplier": "0.0001",
     "tick_size":  "0.00005",
+    "tick_value": 6.25,
     "exchange":   "CME"
   },
   "6L": {
     "multiplier": "0.00001",
     "tick_size":  "0.00005",
+    "tick_value": 5,
     "exchange":   "CME"
+  },
+  "BTC": {
+    "multiplier": "1.0",
+    "tick_size":  "5.0",
+    "tick_value": 25.0,
+    "exchange":   "CME"
+  },
+  "ETH": {
+    "multiplier": "1.0",
+    "tick_size":  "0.25",
+    "tick_value": 12.5,
+    "exchange":   "CME"
+  },
+  "NKD": {
+    "multiplier": "1.0",
+    "tick_size": "5.0",
+    "tick_value": 25.0,
+    "exchange": "CME"
   }
 }

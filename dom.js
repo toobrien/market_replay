@@ -44,6 +44,7 @@ class dom {
     
     multiplier          = null;
     tick_size           = null;
+    tick_value          = null;
     is_bond             = null;
     bond_adj            = null;
     price_precision     = null;
@@ -181,6 +182,7 @@ class dom {
         this.ts                 = 0;
         this.multiplier         = sym_config["multiplier"];
         this.tick_size          = sym_config["tick_size"];
+        this.tick_value         = sym_config["tick_value"];
         this.records            = records;
         this.max_depth          = dom_config["depth"]["max_depth"];
 
