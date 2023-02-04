@@ -1,3 +1,4 @@
+from copy       import deepcopy
 from flask      import Flask, Response, render_template, send_file
 from flask_cors import CORS
 from json       import dumps, loads
@@ -98,7 +99,8 @@ if __name__ == "__main__":
 
         for key, config in sym_config.items():
 
-            exchange = config["exchange"]
+            cfg     =  deepcopy(config)
+            exchange = cfg["exchange"]
             friendly = None
 
             if search(f"^{key}.*_FUT_{exchange}", sym):
@@ -111,9 +113,9 @@ if __name__ == "__main__":
 
             if friendly:
 
-                config["friendly_symbol"] = friendly
+                cfg["friendly_symbol"] = friendly
                 
-                SYMBOLS[sym] = config
+                SYMBOLS[sym] = cfg
 
                 break
     
