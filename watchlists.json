@@ -21,20 +21,25 @@
         "HOQ23-HOU23.FUT_SPREAD.CME"
     ],
     "energies": [
-        "CLG23_FUT_CME",
-        "NGG23_FUT_CME",
-        "HOG23_FUT_CME",
-        "RBG23_FUT_CME"
+        "CLH23_FUT_CME",
+        "NGH23_FUT_CME",
+        "HOH23_FUT_CME"
     ],
-    "equities": [
+    "us_equities": [
         "ESG23_FUT_CME",
         "NQG23_FUT_CME",
         "RTYG23_FUT_CME"    
     ],
-    "bonds": [
+    "us_bonds": [
         "ZBH23_FUT_CME",
         "ZNH23_FUT_CME",
         "ZFH23_FUT_CME",
         "ZTH23_FUT_CME"
+    ],
+    "eu_bonds": [
+        "FGBXH23-EUREX",
+        "FGBLH23-EUREX",
+        "FGBMH23-EUREX",
+        "FGBSH23-EUREX"
     ]
 }
